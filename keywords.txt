@@ -1,0 +1,31 @@
+#######################################
+# Syntax Coloring Map For Arduino MAX7219 Library
+#######################################
+# Class
+#######################################
+
+MAX7219_DotMatrix	KEYWORD1
+
+#######################################
+# Methods and Functions
+#######################################
+
+point	        KEYWORD2
+line            KEYWORD2
+triangle        KEYWORD2
+rect            KEYWORD2
+rectMode        KEYWORD2
+ellipse         KEYWORD2
+fill            KEYWORD2
+noFill          KEYWORD2
+translate       KEYWORD2
+resetMatrix     KEYWORD2
+
+
+
+#######################################
+# Constants
+#######################################
+
+hogepiyo    	LITERAL1
+

@@ -29,5 +29,5 @@ Hardware example:
 
 ### Coordinate manipulation functions
 
-* translate(x, y)
+* translate()
 * resetMatrix()
