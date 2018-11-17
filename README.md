@@ -17,17 +17,41 @@ Hardware example:
 
 ### Draw functions
 
-* point()
-* line()
-* triangle()
-* rect()
-* rectMode()
-* ellipse()
+* point(x, y)
+* line(x1, y1, x2, y2)
+* triangle(x1, y1, x2, y2, x3, y3)
+* rect(x, y, w, h)
+* quad(x1, y1, x2, y2, x3, y3, x4, y4)
+* ellipse(x, y, w, h)
 * fill()
-    * only support "LED ON"
+    * only support LED status "ON" or "OFF"
 * noFill()
 
 ### Coordinate manipulation functions
 
-* translate()
+* translate(x, y)
 * resetMatrix()
+
+### Original functions
+
+* allOn()
+* allOff()
+* setDrawMode(mode)
+
+`allOn()` and `allOff()` functions works literally.
+
+`setDrawMode()` specifies the lighting state of the LED when "Draw functions" are called. `setDrawMode()` needs to be called before calling "Draw functions". For example:
+
+``` C++
+setDrawMode(true);
+point(0, 0);
+// -> point (0, 0) LED will turn ON
+
+setDrawMode(false);
+point(0, 0);
+// -> point (0, 0) LED will turn OFF
+
+
+```
+
+default status of `setDrawMode()` is `true`.

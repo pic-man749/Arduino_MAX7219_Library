@@ -14,7 +14,7 @@ point	        KEYWORD2
 line            KEYWORD2
 triangle        KEYWORD2
 rect            KEYWORD2
-rectMode        KEYWORD2
+quad            KEYWORD2
 ellipse         KEYWORD2
 fill            KEYWORD2
 noFill          KEYWORD2
