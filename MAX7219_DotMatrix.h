@@ -1,6 +1,6 @@
 // Arduino
-#ifndef ARDUINO_MAX7219_H
-#define ARDUINO_MAX7219_H
+#ifndef MAX7219_DotMatrix_H
+#define MAX7219_DotMatrix_H
 
 #if (ARDUINO >= 100)
     #include <Arduino.h>

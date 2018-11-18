@@ -1,4 +1,4 @@
-#include "Arduino_MAX7219_Library.h"
+#include "MAX7219_DotMatrix.h"
 #include <SPI.h>
 
 // constructor
