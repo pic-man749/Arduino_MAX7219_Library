@@ -4,6 +4,11 @@ Arduino library for MAX7219 Dot Matrix Module 4 in 1 Display.
 
 This library aims to control Dot Matrix Display using MAX7219 module like Processing.
 
+You can use more than 4 Dot Matrix Module(Up to 255 * 255 or as far as memory permits).
+
+Furthermore, you can freely decide the arrangement of modules.
+For example, if you have 4 Dot Matrix module, any of these arrangements can be used : 1 * 4, 2 * 2, 4 * 1.
+
 Hardware example:
 
 * [MAX7219 Dot Matrix Module 4 in One Display - COLORMIX](https://www.gearbest.com/other-accessories/pp_1257191.html?wid=1433363)
@@ -11,19 +16,21 @@ Hardware example:
 
 ###
 
-## Support function
+## Support method
 
-**Only implemented these functions now**
+**Only implemented these methods now**
+
 * point()
 * allOn()
 * allOff()
 * setDrawMode()
 * toggle()
 * draw()
+* setBrightness()
 
-***
+---
 
-### Draw functions
+### Draw methods
 
 * point(x, y)
 * line(x1, y1, x2, y2)
@@ -35,23 +42,28 @@ Hardware example:
     * only support LED status "ON" or "OFF"
 * noFill()
 
-### Coordinate manipulation functions
+### Coordinate manipulation methods
 
 * translate(x, y)
 * resetMatrix()
 
-### Original functions
+### Original methods
 
 * allOn()
 * allOff()
-* setDrawMode(mode)
+* setDrawMode(bool)
 * draw()
 * toggle(x, y)
 * getPoint(x, y)
+* setBrightness({0x00-0x0f})
 
-`allOn()` and `allOff()` functions works literally.
+---
 
-`setDrawMode()` specifies the lighting state of the LED when "Draw functions" are called. Default status of `setDrawMode()` is `true`. `setDrawMode()` needs to be called before calling "Draw functions". For example:
+### Description of who to use the original methods
+
+`allOn()` and `allOff()` methods works literally.
+
+`setDrawMode()` specifies the lighting state of the LED when "Draw methods" are called. Default status of `setDrawMode()` is `true`. `setDrawMode()` needs to be called before calling "Draw methods". For example:
 
 ``` C++
 dotMatrix.setDrawMode(true);
@@ -67,8 +79,10 @@ dotMatrix.draw();
 
 ```
 
-`draw()` function transfer data to MAX7219. So, you must call `draw()` if you want to show anything in Dot Matrix.
+`draw()` method transfer data to MAX7219. So, you must call `draw()` if you want to show anything in Dot Matrix.
 
-`toggle()` function change the LED status of `(x, y)`. If `(x, y)` LED is on, it will be turn off.
+`toggle()` method change the LED status of `(x, y)`. If `(x, y)` LED is on, it will be turn off.
 
-`getPoint()` function gets LED status of `(x, y)`. Return type is `bool`. **Attention**, the status of LED is NOT necessarily correct before call `draw()`.
+`getPoint()` method gets LED status of `(x, y)`. Return type is `bool`. The status of LED is NOT necessarily correct before call `draw()`.
+
+`setBrightness()` method set the brightness of LEDs. Initial vlaue = 0x04. If you set low value, the LED brightness will not be stable.

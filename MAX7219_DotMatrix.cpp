@@ -14,12 +14,12 @@ MAX7219_DotMatrix::MAX7219_DotMatrix(uint8_t mr, uint8_t mc) :
     setPin(13, 10, 11);
     setRowColumn(mr, mc);
 }
-
+// destructor
 MAX7219_DotMatrix::~MAX7219_DotMatrix(){
     if(matrix) free(matrix);
 }
 
-// initialize function
+
 void MAX7219_DotMatrix::setPin(uint8_t p_clk, uint8_t p_cs, uint8_t p_din){
     pin_clk = p_clk;
     pin_cs = p_cs;
@@ -32,6 +32,7 @@ void MAX7219_DotMatrix::setRowColumn(uint8_t r, uint8_t c){
     matrix_byte = 8 * matrix_row * matrix_column;
 }
 
+// initialize function
 void MAX7219_DotMatrix::begin(void) {
     pinMode(pin_clk, OUTPUT);
     pinMode(pin_cs, OUTPUT);
@@ -46,14 +47,14 @@ void MAX7219_DotMatrix::begin(void) {
     SPI.setBitOrder(MSBFIRST);
     SPI.setDataMode(0);
 
-    Write_MAX7219Int(0x09, 0x00);
-    Write_MAX7219Int(0x0a, 0x04);
-    Write_MAX7219Int(0x0b, 0x07);
-    Write_MAX7219Int(0x0c, 0x01);
-    Write_MAX7219Int(0x0f, 0x00);
-    Write_MAX7219Int(0x00, 0x00);//shift data
-    Write_MAX7219Int(0x00, 0x00);//shift data
-    Write_MAX7219Int(0x00, 0x00);//shift data
+    Write_MAX7219Int(0x09, 0x00);   // 00001001 00000000 -> decode mode
+    Write_MAX7219Int(0x0a, 0x04);   // 00001010 00000100 -> brightness:5/16
+    Write_MAX7219Int(0x0b, 0x07);   // 00001011 00000111 -> Scan Limit
+    Write_MAX7219Int(0x0c, 0x01);   // 00001100 00000001 -> Shutdown
+    Write_MAX7219Int(0x0f, 0x00);   // 00001111 00000000 -> Display test
+    Write_MAX7219Int(0x00, 0x00);   // shift data
+    Write_MAX7219Int(0x00, 0x00);   // shift data
+    Write_MAX7219Int(0x00, 0x00);   // shift data
     delay(100);
 
     allOff();
@@ -176,4 +177,8 @@ void MAX7219_DotMatrix::draw(void) {
         digitalWrite(pin_cs, 1);
     }
     digitalWrite(pin_cs, 0);
+}
+
+void MAX7219_DotMatrix::setBrightness(uint8_t brightness){
+    Write_MAX7219Int(0x0a, brightness);
 }

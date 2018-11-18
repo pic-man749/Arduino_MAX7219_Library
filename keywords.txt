@@ -10,22 +10,23 @@ MAX7219_DotMatrix	KEYWORD1
 # Methods and Functions
 #######################################
 
-point	        KEYWORD2
-line            KEYWORD2
-triangle        KEYWORD2
-rect            KEYWORD2
-quad            KEYWORD2
-ellipse         KEYWORD2
-fill            KEYWORD2
-noFill          KEYWORD2
-translate       KEYWORD2
-resetMatrix     KEYWORD2
-allOn           KEYWORD2
-allOff          KEYWORD2
-setDrawMode     KEYWORD2
-toggle          KEYWORD2
-getPoint        KEYWORD2
-draw            KEYWORD2
+point	KEYWORD2
+line	KEYWORD2
+triangle	KEYWORD2
+rect	KEYWORD2
+quad	KEYWORD2
+ellipse	KEYWORD2
+fill	KEYWORD2
+noFill	KEYWORD2
+translate	KEYWORD2
+resetMatrix	KEYWORD2
+allOn	KEYWORD2
+allOff	KEYWORD2
+setDrawMode	KEYWORD2
+toggle	KEYWORD2
+getPoint	KEYWORD2
+draw	KEYWORD2
+setBrightness	KEYWORD2
 
 
 
@@ -33,5 +34,5 @@ draw            KEYWORD2
 # Constants
 #######################################
 
-hogepiyo    	LITERAL1
+hogepiyo	LITERAL1
 

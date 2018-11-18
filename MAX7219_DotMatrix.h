@@ -99,6 +99,7 @@ class MAX7219_DotMatrix {
         void toggle(uint16_t x, uint16_t y);
         bool getPoint(uint16_t x, uint16_t y);
         void draw(void);
+        void setBrightness(uint8_t brightness);
 };
 
 #endif
