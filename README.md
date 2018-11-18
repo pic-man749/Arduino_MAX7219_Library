@@ -37,21 +37,24 @@ Hardware example:
 * allOn()
 * allOff()
 * setDrawMode(mode)
+* draw()
 
 `allOn()` and `allOff()` functions works literally.
 
-`setDrawMode()` specifies the lighting state of the LED when "Draw functions" are called. `setDrawMode()` needs to be called before calling "Draw functions". For example:
+`setDrawMode()` specifies the lighting state of the LED when "Draw functions" are called. Default status of `setDrawMode()` is `true`. `setDrawMode()` needs to be called before calling "Draw functions". For example:
 
 ``` C++
-setDrawMode(true);
-point(0, 0);
+dotMatrix.setDrawMode(true);
+dotMatrix.point(0, 0);
+dotMatrix.draw();
 // -> point (0, 0) LED will turn ON
 
-setDrawMode(false);
-point(0, 0);
+dotMatrix.setDrawMode(false);
+dotMatrix.point(0, 0);
+dotMatrix.draw();
 // -> point (0, 0) LED will turn OFF
 
 
 ```
 
-default status of `setDrawMode()` is `true`.
+`draw()` function transfer data to MAX7219. So, you must call `draw()` if you want to show anything in Dot Matrix.
