@@ -56,19 +56,27 @@ void MAX7219_DotMatrix::begin(void) {
     Write_MAX7219Int(0x00, 0x00);//shift data
     delay(100);
 
+    allOff();
     begun = true;
 }
 
 // private function
-void MAX7219_DotMatrix::Write_MAX7219(char addr, char dat){
+void MAX7219_DotMatrix::Write_MAX7219(uint8_t addr, uint8_t dat){
     SPI.transfer(addr);
     SPI.transfer(dat);
 }
-void MAX7219_DotMatrix::Write_MAX7219Int(char addr, char dat){
+void MAX7219_DotMatrix::Write_MAX7219Int(uint8_t addr, uint8_t dat){
     digitalWrite(pin_cs, 0);
     SPI.transfer(addr);
     SPI.transfer(dat);
     digitalWrite(pin_cs, 1);
+}
+void MAX7219_DotMatrix::setBit(uint16_t index, uint8_t bits){
+    if(draw_mode){
+        matrix[index] |= bits;
+    } else {
+        matrix[index] &= ~bits;
+    }
 }
 uint16_t MAX7219_DotMatrix::convertCoordinateToMatrixIndex(uint16_t x, uint16_t y){
     uint16_t upside    = (uint16_t)(y/8.0);   // count how many rows are on top
@@ -80,10 +88,15 @@ uint8_t MAX7219_DotMatrix::convertCoordinateToMatrixBit(uint16_t x, uint16_t y){
     // Oops! we do not neetd y param!
     return 0b10000000 >> (x%8);
 }
+uint8_t MAX7219_DotMatrix::convertCoordinateToMatrixBit(uint16_t x){
+    return 0b10000000 >> (x%8);
+}
 
 // public function
 void MAX7219_DotMatrix::point(uint16_t x, uint16_t y) {
-    ;
+    uint16_t idx = convertCoordinateToMatrixIndex(x,y);
+    uint8_t bits = convertCoordinateToMatrixBit(x);
+    setBit(idx, bits);
 }
 
 void MAX7219_DotMatrix::line(uint16_t x1, uint16_t y1, uint16_t x2, uint16_t y2) {
@@ -136,27 +149,31 @@ void MAX7219_DotMatrix::setDrawMode(bool mode){
 
 void MAX7219_DotMatrix::toggle(uint16_t x, uint16_t y){
     uint16_t idx = convertCoordinateToMatrixIndex(x, y);
-    uint8_t bit = convertCoordinateToMatrixBit(x, y);
+    uint8_t bits = convertCoordinateToMatrixBit(x, y);
     uint8_t tmp = matrix[idx];
-    if(tmp & bit != 0){
-        matrix[idx] |= ~bit;
+    if(tmp & bits != 0){
+        matrix[idx] |= ~bits;
     }else{
-        matrix[idx] |= bit;
+        matrix[idx] |= bits;
     }
 }
 
 bool MAX7219_DotMatrix::getPoint(uint16_t x, uint16_t y){
     uint16_t idx = convertCoordinateToMatrixIndex(x, y);
-    uint8_t bit = convertCoordinateToMatrixBit(x, y);
+    uint8_t bits = convertCoordinateToMatrixBit(x, y);
     uint8_t tmp = matrix[idx];
-    return (tmp & bit != 0);
+    return (tmp & bits != 0);
 }
 
 void MAX7219_DotMatrix::draw(void) {
-    for(uint16_t count = matrix_byte - 1; count > 0; count++){
-        for(uint8_t addr = 1; addr <= 8; addr++){
-            Write_MAX7219(addr, matrix[count]);
+
+    for(uint8_t i = 1; i<=8; i++){
+        digitalWrite(pin_cs, 0);
+        for(int16_t count = 0; count <= matrix_byte-1; count += 8){
+            uint8_t tmp = matrix[count+i-1];
+            Write_MAX7219(i, tmp);
         }
+        digitalWrite(pin_cs, 1);
     }
     digitalWrite(pin_cs, 0);
 }

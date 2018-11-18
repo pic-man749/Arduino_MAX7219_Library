@@ -50,11 +50,11 @@ class MAX7219_DotMatrix {
             │(0,15)    (7,15)│(8,15)        (31,15)│
             └────────┴───   ...     ──┘
             Then, matrix array lined up like this:
-            matrix[] ={ MSB (0 ,0 ) ... (7 ,0) LSB  // ￣￣start of matrix 1￣￣
+            matrix[] ={ MSB (0 ,0 ) ... (7 ,0) LSB  // --- start of matrix 1---
                             (0 ,1 ) ... (7 ,1)      // 1 line 1byte(uint8_t)
                                     ...
                             (0 ,7 ) ... (7 ,7)      // ____ end of matrix 1 ___
-                            (8 ,0 ) ... (15 ,7)     // ￣￣start of matrix 2￣￣
+                            (8 ,0 ) ... (15 ,7)     // ---start of matrix 2---
                                     ...
                             (8 ,7 ) ... (15 ,7)     // ____ end of matrix 2 ___
                                     ...
@@ -68,10 +68,12 @@ class MAX7219_DotMatrix {
         // private functions
         void setPin(uint8_t pin_clk, uint8_t pin_cs, uint8_t pin_din);
         void setRowColumn(uint8_t r, uint8_t c);
-        void Write_MAX7219(char addr, char dat);
-        void Write_MAX7219Int(char addr, char dat);
+        void Write_MAX7219(uint8_t addr, uint8_t dat);
+        void Write_MAX7219Int(uint8_t addr, uint8_t dat);
+        void setBit(uint16_t index, uint8_t bit);
         uint16_t convertCoordinateToMatrixIndex(uint16_t x, uint16_t y);
         uint8_t  convertCoordinateToMatrixBit(uint16_t x, uint16_t y);
+        uint8_t  convertCoordinateToMatrixBit(uint16_t x);
 
     public:
         // constructor

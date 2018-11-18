@@ -13,7 +13,15 @@ Hardware example:
 
 ## Support function
 
-**All functions are still Unimplemented!**
+**Only implemented these functions now**
+* point()
+* allOn()
+* allOff()
+* setDrawMode()
+* toggle()
+* draw()
+
+***
 
 ### Draw functions
 
