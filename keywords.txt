@@ -23,6 +23,8 @@ resetMatrix     KEYWORD2
 allOn           KEYWORD2
 allOff          KEYWORD2
 setDrawMode     KEYWORD2
+toggle          KEYWORD2
+getPoint        KEYWORD2
 draw            KEYWORD2
 
 

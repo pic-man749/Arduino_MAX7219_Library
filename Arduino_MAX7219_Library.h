@@ -22,17 +22,56 @@ class MAX7219_DotMatrix {
 
     private:
         // private var
-        boolean begun, fill_status, draw_mode;
+        bool begun, fill_status, draw_mode;
         uint8_t pin_clk, pin_cs, pin_din, matrix_row, matrix_column;
         uint16_t offset_x, offset_y;
         uint32_t matrix_byte;
         uint8_t* matrix;
+        /*  matrix[] example:
+            If you create 2*4 matrix, matrix number define ...
+            ┌─┬─┬─┬─┐
+            │1 │2 │3 │4 │
+            ├─┼─┼─┼─┤
+            │5 │6 │7 │8 │
+            └─┴─┴─┴─┘
+            And LeftTop matrix's LED is point(0,0).
+            If you enlarge the figure above it looks like the figure below
+            ┌────────┬───   ...   ───┐
+            │(0,0)      (7,0)│(8,0)          (31,0)│
+            │                │                     │
+            │       1        │     2   ...   4     │
+            │                │                     │
+            │(0,7)      (7,7)│(8,7)          (31,7)│
+            ├────────┼         ...         ┤
+            │(0,8)      (7,8)│(8,8)          (31,8)│
+            │                │                     │
+            │       5        │     6   ...   8     │
+            │                │                     │
+            │(0,15)    (7,15)│(8,15)        (31,15)│
+            └────────┴───   ...     ──┘
+            Then, matrix array lined up like this:
+            matrix[] ={ MSB (0 ,0 ) ... (7 ,0) LSB  // ￣￣start of matrix 1￣￣
+                            (0 ,1 ) ... (7 ,1)      // 1 line 1byte(uint8_t)
+                                    ...
+                            (0 ,7 ) ... (7 ,7)      // ____ end of matrix 1 ___
+                            (8 ,0 ) ... (15 ,7)     // ￣￣start of matrix 2￣￣
+                                    ...
+                            (8 ,7 ) ... (15 ,7)     // ____ end of matrix 2 ___
+                                    ...
+                                    ...
+                                    ...
+                            (24 ,8) ... (31 ,15)    // ____ end of matrix 8 ___
+                       }
+            1 bit correspond to LED status(0->off, 1->on).
+        */
 
         // private functions
         void setPin(uint8_t pin_clk, uint8_t pin_cs, uint8_t pin_din);
-        void setMatrixCount(uint8_t matrix_count);
+        void setRowColumn(uint8_t r, uint8_t c);
         void Write_MAX7219(char addr, char dat);
         void Write_MAX7219Int(char addr, char dat);
+        uint16_t convertCoordinateToMatrixIndex(uint16_t x, uint16_t y);
+        uint8_t  convertCoordinateToMatrixBit(uint16_t x, uint16_t y);
 
     public:
         // constructor
@@ -54,7 +93,9 @@ class MAX7219_DotMatrix {
         void resetMatrix(void);
         void allOn(void);
         void allOff(void);
-        void setDrawMode(mode);
+        void setDrawMode(bool mode);
+        void toggle(uint16_t x, uint16_t y);
+        bool getPoint(uint16_t x, uint16_t y);
         void draw(void);
 };
 

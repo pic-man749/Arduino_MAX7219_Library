@@ -38,6 +38,8 @@ Hardware example:
 * allOff()
 * setDrawMode(mode)
 * draw()
+* toggle(x, y)
+* getPoint(x, y)
 
 `allOn()` and `allOff()` functions works literally.
 
@@ -58,3 +60,7 @@ dotMatrix.draw();
 ```
 
 `draw()` function transfer data to MAX7219. So, you must call `draw()` if you want to show anything in Dot Matrix.
+
+`toggle()` function change the LED status of `(x, y)`. If `(x, y)` LED is on, it will be turn off.
+
+`getPoint()` function gets LED status of `(x, y)`. Return type is `bool`. **Attention**, the status of LED is NOT necessarily correct before call `draw()`.
