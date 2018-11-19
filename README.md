@@ -56,33 +56,3 @@ Hardware example:
 * toggle(x, y)
 * getPoint(x, y)
 * setBrightness({0x00-0x0f})
-
----
-
-### Description of who to use the original methods
-
-`allOn()` and `allOff()` methods works literally.
-
-`setDrawMode()` specifies the lighting state of the LED when "Draw methods" are called. Default status of `setDrawMode()` is `true`. `setDrawMode()` needs to be called before calling "Draw methods". For example:
-
-``` C++
-dotMatrix.setDrawMode(true);
-dotMatrix.point(0, 0);
-dotMatrix.draw();
-// -> point (0, 0) LED will turn ON
-
-dotMatrix.setDrawMode(false);
-dotMatrix.point(0, 0);
-dotMatrix.draw();
-// -> point (0, 0) LED will turn OFF
-
-
-```
-
-`draw()` method transfer data to MAX7219. So, you must call `draw()` if you want to show anything in Dot Matrix.
-
-`toggle()` method change the LED status of `(x, y)`. If `(x, y)` LED is on, it will be turn off.
-
-`getPoint()` method gets LED status of `(x, y)`. Return type is `bool`. The status of LED is NOT necessarily correct before call `draw()`.
-
-`setBrightness()` method set the brightness of LEDs. Initial vlaue = 0x04. If you set low value, the LED brightness will not be stable.
