@@ -14,9 +14,38 @@ Hardware example:
 * [MAX7219 Dot Matrix Module 4 in One Display - COLORMIX](https://www.gearbest.com/other-accessories/pp_1257191.html?wid=1433363)
 * [ＭＡＸ７２１９使用赤色ドットマトリクスＬＥＤモジュール](http://akizukidenshi.com/catalog/g/gM-09984/)
 
-###
+**This is a beta version. Several methods are not yet implemented**
 
-## Support method
+## Sample code:basic.ino
+
+``` C++
+#include<MAX7219_DotMatrix.h>
+
+// create instance, arg:(row, column)
+MAX7219_DotMatrix dm = MAX7219_DotMatrix(1, 4);
+
+void setup() {
+
+  // initialize method, you must call.
+  dm.begin();
+
+}
+
+void loop() {
+
+  for(int i=0; i<8; i+=1){
+    for(int j=0; j<8*4; j+=1 ){
+      dm.point(j, i); // draw a dot at(i, j)
+      dm.draw();      // draw. No change is made to the LED until this method is called.
+      delay(100);
+    }
+  }
+
+  // All LEDs turn off
+  dm.allOff();
+}
+
+```
 
 **Only implemented these methods now**
 
@@ -27,32 +56,3 @@ Hardware example:
 * toggle()
 * draw()
 * setBrightness()
-
----
-
-### Draw methods
-
-* point(x, y)
-* line(x1, y1, x2, y2)
-* triangle(x1, y1, x2, y2, x3, y3)
-* rect(x, y, w, h)
-* quad(x1, y1, x2, y2, x3, y3, x4, y4)
-* ellipse(x, y, w, h)
-* fill()
-    * only support LED status "ON" or "OFF"
-* noFill()
-
-### Coordinate manipulation methods
-
-* translate(x, y)
-* resetMatrix()
-
-### Original methods
-
-* allOn()
-* allOff()
-* setDrawMode(bool)
-* draw()
-* toggle(x, y)
-* getPoint(x, y)
-* setBrightness({0x00-0x0f})
