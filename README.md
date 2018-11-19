@@ -35,7 +35,7 @@ void loop() {
 
   for(int i=0; i<8; i+=1){
     for(int j=0; j<8*4; j+=1 ){
-      dm.point(j, i); // draw a dot at(i, j)
+      dm.point(j, i); // draw a dot at(j, i)
       dm.draw();      // draw. No change is made to the LED until this method is called.
       delay(100);
     }
