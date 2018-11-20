@@ -155,12 +155,14 @@ void MAX7219_DotMatrix::setDrawMode(bool mode){
 }
 
 void MAX7219_DotMatrix::toggle(uint16_t x, uint16_t y){
+	if(!isWithin(x,y)) return;
     uint16_t idx = convertCoordinateToMatrixIndex(x, y);
     uint8_t bits = convertCoordinateToMatrixBit(x, y);
     matrix[idx] ^= bits;
 }
 
 bool MAX7219_DotMatrix::getPoint(uint16_t x, uint16_t y){
+	if(!isWithin(x,y)) return false;
     uint16_t idx = convertCoordinateToMatrixIndex(x, y);
     uint8_t bits = convertCoordinateToMatrixBit(x, y);
     uint8_t tmp = matrix[idx];
@@ -219,7 +221,10 @@ bool MAX7219_DotMatrix::setDirection(uint8_t E_dd){
 	rotate_state = E_dd;
 
 	// sorry, we support only 0 and 180 now 。ﾟ(ﾟ∩'▽'∩ﾟ)ﾟ｡
-	if(rotate_state == DM_DIRECTION_0 || rotate_state == DM_DIRECTION_270) rotate_state = DM_DIRECTION_0;
+	if(rotate_state == DM_DIRECTION_0 || rotate_state == DM_DIRECTION_270){
+		rotate_state = DM_DIRECTION_0;
+		return false;
+	}
 
 	return true;
 }
