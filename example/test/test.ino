@@ -43,10 +43,18 @@ void loop() {
     for(int j=0; j<MATRIX_DOT*MATRIX_COL; j+=1 ){
       dm.point(j, i); // draw a dot at(j, i)
       dm.draw();      // draw. No change is made to the LED until this method is called.
-      delay(100);
+      delay(50);
     }
   }
-
-  // All LEDs turn off
+  dm.setDirection(DM_DIRECTION_180);
+  
+  for(int i=0; i<MATRIX_DOT*MATRIX_ROW; i+=1){
+    for(int j=0; j<MATRIX_DOT*MATRIX_COL; j+=1 ){
+      dm.toggle(j, i); // draw a dot at(j, i)
+      dm.draw();      // draw. No change is made to the LED until this method is called.
+      delay(50);
+    }
+  }
+  dm.setDirection(DM_DIRECTION_0);
   dm.allOff();
 }

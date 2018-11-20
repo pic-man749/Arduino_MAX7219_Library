@@ -9,6 +9,11 @@
     #include <pins_arduino.h>
 #endif
 
+#define DM_DIRECTION_0   0
+#define DM_DIRECTION_90  1
+#define DM_DIRECTION_180 2
+#define DM_DIRECTION_270 3
+
 // constants
 // single  : 0bXXXXXXXX XXXXXXXX
 //             |||||||| ||||||||
@@ -23,7 +28,7 @@ class MAX7219_DotMatrix {
     private:
         // private var
         bool begun, fill_status, draw_mode;
-        uint8_t pin_clk, pin_cs, pin_din, matrix_row, matrix_column;
+        uint8_t pin_clk, pin_cs, pin_din, matrix_row, matrix_column, rotate_state;
         uint16_t offset_x, offset_y;
         uint32_t matrix_byte;
         uint8_t* matrix;
@@ -74,15 +79,17 @@ class MAX7219_DotMatrix {
         uint16_t convertCoordinateToMatrixIndex(uint16_t x, uint16_t y);
         uint8_t  convertCoordinateToMatrixBit(uint16_t x, uint16_t y);
         uint8_t  convertCoordinateToMatrixBit(uint16_t x);
+        bool isWithin(uint16_t x, uint16_t y);
 
     public:
+
         // constructor
         MAX7219_DotMatrix(uint8_t pin_clk, uint8_t pin_cs, uint8_t pin_din, uint8_t matrix_row, uint8_t matrix_column);
         MAX7219_DotMatrix(uint8_t matrix_row, uint8_t matrix_column);
         ~MAX7219_DotMatrix();
 
         // public functions
-        void begin(void);
+        bool begin(void);
         void point(uint16_t x, uint16_t y);
         void line(uint16_t x1, uint16_t y1, uint16_t x2, uint16_t y2);
         void triangle(uint16_t x1, uint16_t y1, uint16_t x2, uint16_t y2, uint16_t x3, uint16_t y3);
@@ -99,7 +106,8 @@ class MAX7219_DotMatrix {
         void toggle(uint16_t x, uint16_t y);
         bool getPoint(uint16_t x, uint16_t y);
         void draw(void);
-        void setBrightness(uint8_t brightness);
+        bool setBrightness(uint8_t brightness);
+        bool setDirection(uint8_t);
 };
 
 #endif
