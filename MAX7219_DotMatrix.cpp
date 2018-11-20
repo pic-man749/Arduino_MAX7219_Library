@@ -17,6 +17,7 @@ MAX7219_DotMatrix::MAX7219_DotMatrix(uint8_t mr, uint8_t mc) :
 // destructor
 MAX7219_DotMatrix::~MAX7219_DotMatrix(){
     if(matrix) free(matrix);
+    SPI.end();
 }
 
 

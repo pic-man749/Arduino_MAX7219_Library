@@ -16,9 +16,9 @@ Hardware example:
 
 **This is a beta version. Several methods are not yet implemented**
 
-## Sample code:basic.ino
+## Sample code
 
-``` C++
+``` C++:basic.ino
 #include<MAX7219_DotMatrix.h>
 
 // create instance, arg:(row, column)
@@ -46,6 +46,7 @@ void loop() {
 }
 
 ```
+For more information about method, please refer to [Wiki](https://github.com/pic-man749/Arduino_MAX7219_Library/wiki/Welcome-to-the-Arduino_MAX7219_Library-wiki!).
 
 **Only implemented these methods now**
 
