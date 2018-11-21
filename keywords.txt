@@ -27,6 +27,7 @@ toggle	KEYWORD2
 getPoint	KEYWORD2
 draw	KEYWORD2
 setBrightness	KEYWORD2
+setDirection	KEYWORD2
 
 
 

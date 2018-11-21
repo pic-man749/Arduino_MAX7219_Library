@@ -33,28 +33,21 @@ MAX7219_DotMatrix dm = MAX7219_DotMatrix(MATRIX_ROW, MATRIX_COL);
 void setup() {
 
   // initialize method, you must call.
+  Serial.begin(9600);
+  Serial.println("init start");
   dm.begin();
+  Serial.println("init end");
 
 }
 
 void loop() {
 
-  for(int i=0; i<MATRIX_DOT*MATRIX_ROW; i+=1){
-    for(int j=0; j<MATRIX_DOT*MATRIX_COL; j+=1 ){
-      dm.point(j, i); // draw a dot at(j, i)
-      dm.draw();      // draw. No change is made to the LED until this method is called.
-      delay(50);
-    }
-  }
-  dm.setDirection(DM_DIRECTION_180);
-  
-  for(int i=0; i<MATRIX_DOT*MATRIX_ROW; i+=1){
-    for(int j=0; j<MATRIX_DOT*MATRIX_COL; j+=1 ){
-      dm.toggle(j, i); // draw a dot at(j, i)
-      dm.draw();      // draw. No change is made to the LED until this method is called.
-      delay(50);
-    }
-  }
-  dm.setDirection(DM_DIRECTION_0);
+  Serial.println("loop");
+  dm.line(0,0,7,7);
+  dm.triangle(12,0,8,7,15,8);
+  dm.rect(17, 1, 6, 6);
+  dm.quad(24, 0, 24, 6, 30, 6, 30, 1);
+  dm.draw();
+  delay(3000);
   dm.allOff();
 }

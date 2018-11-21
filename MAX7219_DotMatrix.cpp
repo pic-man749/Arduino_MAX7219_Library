@@ -111,14 +111,21 @@ void MAX7219_DotMatrix::point(int16_t x, int16_t y) {
 }
 
 void MAX7219_DotMatrix::line(int16_t x1, int16_t y1, int16_t x2, int16_t y2) {
-    int16_t abs_x = abs(x2 - x1);
-    int16_t abs_y = abs(y2 - y1);
     int16_t min_x = (x1 < x2 )? x1:x2;
     int16_t min_y = (y1 < y2 )? y1:y2;
 
-    for(int i = min_x; i <= min_x+abs_x; i++){
-        uint16_t y = (uint16_t)abs_y/abs_x*i + min_y;
-        setBit(i, y);
+    for(int i = min_x; i <= min_x+abs(x2-x1); i++){
+
+        if(x2-x1 == 0){
+            // Avoid dividing by zero
+            for(int j = min_y; j <= min_y+abs(y2-y1); j++) setBit(i, j);
+            break;
+        }else{
+            double val_y = (y2-y1)/double(x2-x1)*(i-x1) + y1;
+            if(val_y)
+            setBit(i, (uint16_t)val_y );
+        }
+
     }
 }
 
@@ -141,8 +148,11 @@ void MAX7219_DotMatrix::rect(int16_t x, int16_t y, uint16_t w, uint16_t h) {
 
     line(x, y, x, end_y);
     line(x, y, end_x, y);
-    linr(x, end_y, end_x, end_y);
-    linr(end_x, y, end_x, end_y);
+    line(x, end_y, end_x, end_y);
+    line(end_x, y, end_x, end_y);
+
+
+    if(!fill_status) return;
 
     // fill
     for(int i = y+1; i < end_y; i++){
@@ -155,7 +165,7 @@ void MAX7219_DotMatrix::quad(int16_t x1, int16_t y1, int16_t x2, int16_t y2, int
     line(x1, y1, x2, y2);
     line(x2, y2, x3, y3);
     line(x3, y3, x4, y4);
-    line(x1, y1, x4, x4);
+    line(x1, y1, x4, y4);
 
     // If fill status is not set, return
     if(!fill_status) return;
