@@ -34,26 +34,26 @@ class MAX7219_DotMatrix {
         uint8_t* matrix;
         /*  matrix[] example:
             If you create 2*4 matrix, matrix number define ...
-            ┌─┬─┬─┬─┐
-            │1 │2 │3 │4 │
-            ├─┼─┼─┼─┤
-            │5 │6 │7 │8 │
-            └─┴─┴─┴─┘
+                        ┌─┬─┬─┬─┐
+             Arduino ===│1 │2 │3 │4 │->to No.5
+                        ├─┼─┼─┼─┤
+             from N0.4->│5 │6 │7 │8 │
+                        └─┴─┴─┴─┘
             And LeftTop matrix's LED is point(0,0).
             If you enlarge the figure above it looks like the figure below
-            ┌────────┬───   ...   ───┐
-            │(0,0)      (7,0)│(8,0)          (31,0)│
-            │                │                     │
-            │       1        │     2   ...   4     │
-            │                │                     │
-            │(0,7)      (7,7)│(8,7)          (31,7)│
-            ├────────┼         ...         ┤
-            │(0,8)      (7,8)│(8,8)          (31,8)│
-            │                │                     │
-            │       5        │     6   ...   8     │
-            │                │                     │
-            │(0,15)    (7,15)│(8,15)        (31,15)│
-            └────────┴───   ...     ──┘
+                            ┌────────┬───   ...   ───┐
+                      ┌─> │(0,0)      (7,0)│(8,0)          (31,0)│─┐
+               Arduino├─> │                │                     │─┤
+                 SPI  ┼─> │       1        │     2   ...   4     │─┼> connect No.5 DotMatrix DataIn
+                PORTs ├─> │                │                     │─┤
+                      └─> │(0,7)      (7,7)│(8,7)          (31,7)│─┘
+                            ├────────┼         ...         ┤
+                          ->│(0,8)      (7,8)│(8,8)          (31,8)│
+                          ->│                │                     │
+                 from No.4->│       5        │     6   ...   8     │  (end)
+                          ->│                │                     │
+                          ->│(0,15)    (7,15)│(8,15)        (31,15)│
+                            └────────┴───   ...     ──┘
             Then, matrix array lined up like this:
             matrix[] ={ MSB (0 ,0 ) ... (7 ,0) LSB  // --- start of matrix 1---
                             (0 ,1 ) ... (7 ,1)      // 1 line 1byte(uint8_t)
@@ -75,11 +75,11 @@ class MAX7219_DotMatrix {
         void setRowColumn(uint8_t r, uint8_t c);
         void Write_MAX7219(uint8_t addr, uint8_t dat);
         void Write_MAX7219Int(uint8_t addr, uint8_t dat);
-        void setBit(uint16_t index, uint8_t bit);
+        bool setBit(int16_t x, int16_t y);
         uint16_t convertCoordinateToMatrixIndex(uint16_t x, uint16_t y);
         uint8_t  convertCoordinateToMatrixBit(uint16_t x, uint16_t y);
         uint8_t  convertCoordinateToMatrixBit(uint16_t x);
-        bool isWithin(uint16_t x, uint16_t y);
+        bool isWithin(int16_t x, int16_t y);
 
     public:
 
@@ -90,21 +90,21 @@ class MAX7219_DotMatrix {
 
         // public functions
         bool begin(void);
-        void point(uint16_t x, uint16_t y);
-        void line(uint16_t x1, uint16_t y1, uint16_t x2, uint16_t y2);
-        void triangle(uint16_t x1, uint16_t y1, uint16_t x2, uint16_t y2, uint16_t x3, uint16_t y3);
-        void rect(uint16_t x, uint16_t y, uint16_t w, uint16_t h);
-        void quad(uint16_t x1, uint16_t y1, uint16_t x2, uint16_t y2, uint16_t x3, uint16_t y3, uint16_t x4, uint16_t y4);
-        void ellipse(uint16_t x, uint16_t y, uint16_t w, uint16_t h);
+        void point(int16_t x, int16_t y);
+        void line(int16_t x1, int16_t y1, int16_t x2, int16_t y2);
+        void triangle(int16_t x1, int16_t y1, int16_t x2, int16_t y2, int16_t x3, int16_t y3);
+        void rect(int16_t x, int16_t y, uint16_t w, uint16_t h);
+        void quad(int16_t x1, int16_t y1, int16_t x2, int16_t y2, int16_t x3, int16_t y3, int16_t x4, int16_t y4);
+        void ellipse(int16_t x, int16_t y, int16_t w, int16_t h);
         void fill(void);
         void noFill(void);
-        void translate(uint16_t x, uint16_t y);
+        void translate(int16_t x, int16_t y);
         void resetMatrix(void);
         void allOn(void);
         void allOff(void);
         void setDrawMode(bool mode);
-        void toggle(uint16_t x, uint16_t y);
-        bool getPoint(uint16_t x, uint16_t y);
+        void toggle(int16_t x, int16_t y);
+        bool getPoint(int16_t x, int16_t y);
         void draw(void);
         bool setBrightness(uint8_t brightness);
         bool setDirection(uint8_t);
@@ -120,5 +120,9 @@ class MAX7219_DotMatrix {
         * 座標変換のサポート（負の値入ってきたとき死ぬ）
         * matrix[]の書き換えするときに範囲外チェックしてない
         * SPI.begin()のデバイスによっての個別設定
+
+        * triangle と quad のfill
+
+        * 座標操作系関数の廃止を検討
 
 */
