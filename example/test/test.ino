@@ -33,7 +33,7 @@ MAX7219_DotMatrix dm = MAX7219_DotMatrix(MATRIX_ROW, MATRIX_COL);
 void setup() {
 
   // initialize method, you must call.
-  Serial.begin(9600);
+  Serial.begin(115200);
   Serial.println("init start");
   dm.begin();
   Serial.println("init end");
@@ -43,11 +43,33 @@ void setup() {
 void loop() {
 
   Serial.println("loop");
-  dm.line(0,0,7,7);
-  dm.triangle(12,0,8,7,15,8);
-  dm.rect(17, 1, 6, 6);
-  dm.quad(24, 0, 24, 6, 30, 6, 30, 1);
+//  dm.line(0,0,23,0);
+//  dm.line(0,0,0,7);
+//  dm.line(31,7,24,0);
+//  dm.line(31,0,24,7);
+//  dm.line(5,3,5,7);
+//  dm.line(0,3,7,3);
+//  dm.triangle(12,0,8,7,15,8);
+//  dm.rect(17, 1, 6, 6);
+//  dm.quad(24, 1, 24, 6, 30, 6, 30, 1);
+
+//  dm.ellipse(25,3,2,2);
+//
+//  dm.ellipse(8,7,16,16);
+  
+  bool hoge = dm.triangle(16,0,16,7,23,4);
+  dm.fill();
+  hoge = dm.triangle(0,0,0,7,7,4);
+//  
+//  Serial.print("lp end, ");
+//  Serial.println(hoge);
   dm.draw();
-  delay(3000);
-  dm.allOff();
+
+  for(int i=0; i<8; i++){
+    for(int j=0; j<32; j++) Serial.print(dm.getPoint(j,i));
+    Serial.println();
+  }
+
+  while(1) ;
+  
 }

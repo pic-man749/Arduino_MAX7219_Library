@@ -13,6 +13,8 @@
 #define DM_DIRECTION_90  1
 #define DM_DIRECTION_180 2
 #define DM_DIRECTION_270 3
+#define DM_DOT_COUNT 8.0
+#define DM_PI 3.141592653589793
 
 // constants
 // single  : 0bXXXXXXXX XXXXXXXX
@@ -76,10 +78,13 @@ class MAX7219_DotMatrix {
         void Write_MAX7219(uint8_t addr, uint8_t dat);
         void Write_MAX7219Int(uint8_t addr, uint8_t dat);
         bool setBit(int16_t x, int16_t y);
+        bool setBit(int16_t x, int16_t y, uint8_t matrix_tmp[]);
         uint16_t convertCoordinateToMatrixIndex(uint16_t x, uint16_t y);
         uint8_t  convertCoordinateToMatrixBit(uint16_t x, uint16_t y);
         uint8_t  convertCoordinateToMatrixBit(uint16_t x);
         bool isWithin(int16_t x, int16_t y);
+        bool closedAreaFill(int16_t center_x, int16_t center_y, uint8_t *matrix_tmp);
+        int16_t closedAreaFillLoop(int16_t idx, int16_t *stack, uint8_t *matrix_tmp);
 
     public:
 
@@ -92,7 +97,8 @@ class MAX7219_DotMatrix {
         bool begin(void);
         void point(int16_t x, int16_t y);
         void line(int16_t x1, int16_t y1, int16_t x2, int16_t y2);
-        void triangle(int16_t x1, int16_t y1, int16_t x2, int16_t y2, int16_t x3, int16_t y3);
+        void line(int16_t x1, int16_t y1, int16_t x2, int16_t y2, uint8_t *matrix_tmp);
+        bool triangle(int16_t x1, int16_t y1, int16_t x2, int16_t y2, int16_t x3, int16_t y3);
         void rect(int16_t x, int16_t y, uint16_t w, uint16_t h);
         void quad(int16_t x1, int16_t y1, int16_t x2, int16_t y2, int16_t x3, int16_t y3, int16_t x4, int16_t y4);
         void ellipse(int16_t x, int16_t y, int16_t w, int16_t h);
@@ -105,9 +111,10 @@ class MAX7219_DotMatrix {
         void setDrawMode(bool mode);
         void toggle(int16_t x, int16_t y);
         bool getPoint(int16_t x, int16_t y);
+        bool getPoint(int16_t x, int16_t y, uint8_t *matrix_tmp);
         void draw(void);
         bool setBrightness(uint8_t brightness);
-        bool setDirection(uint8_t);
+        bool setDirection(uint8_t E_dd);
 };
 
 #endif

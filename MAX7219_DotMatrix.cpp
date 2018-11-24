@@ -76,33 +76,109 @@ void MAX7219_DotMatrix::Write_MAX7219Int(uint8_t addr, uint8_t dat){
 }
 bool MAX7219_DotMatrix::setBit(int16_t x, int16_t y){
 
+    return setBit(x, y, NULL);
+}
+bool MAX7219_DotMatrix::setBit(int16_t x, int16_t y, uint8_t *matrix_tmp){
+
     if(!isWithin(x,y)) return false;
     uint16_t index = convertCoordinateToMatrixIndex(x,y);
     uint8_t bits = convertCoordinateToMatrixBit(x);
 
     if(draw_mode){
-        matrix[index] |= bits;
+        if(matrix_tmp){
+            matrix_tmp[index] |= bits;
+        }  else {
+            matrix[index] |= bits;
+        }
     } else {
-        matrix[index] &= ~bits;
+        if(matrix_tmp){
+            matrix_tmp[index] &= ~bits;
+        }  else {
+            matrix[index] &= ~bits;
+        }
     }
 
     return true;
 }
 uint16_t MAX7219_DotMatrix::convertCoordinateToMatrixIndex(uint16_t x, uint16_t y){
-    uint16_t upside    = (uint16_t)(y/8.0);   // count how many rows are on top
-    uint16_t leftside  = (uint16_t)(x/8.0);   // count how many columns are on the left side
-    uint8_t  thisblock = y%8;                 // count how many lines are on top in this block
-    return upside*8*matrix_column + leftside*8 + thisblock;
+    uint16_t upside    = (uint16_t)floor(y/DM_DOT_COUNT);   // count how many rows are on top
+    uint16_t leftside  = (uint16_t)floor(x/DM_DOT_COUNT);   // count how many columns are on the left side
+    uint8_t  thisblock = y%(int)DM_DOT_COUNT;               // count how many lines are on top in this block
+    return upside*DM_DOT_COUNT*matrix_column + leftside*DM_DOT_COUNT + thisblock;
 }
 uint8_t MAX7219_DotMatrix::convertCoordinateToMatrixBit(uint16_t x, uint16_t y){
     // Oops! we do not need y param! ꉂꉂ ( ˆᴗˆ  )
-    return 0b10000000 >> (x%8);
+    return 0b10000000 >> (x%(int)DM_DOT_COUNT);
 }
 uint8_t MAX7219_DotMatrix::convertCoordinateToMatrixBit(uint16_t x){
-    return 0b10000000 >> (x%8);
+    return 0b10000000 >> (x%(int)DM_DOT_COUNT);
 }
 bool MAX7219_DotMatrix::isWithin(int16_t x, int16_t y){
-    return (0 <= x && x < matrix_column * 8 && 0<= y && y < matrix_row * 8);
+    return (0 <= x && x < matrix_column * DM_DOT_COUNT && 0<= y && y < matrix_row * DM_DOT_COUNT);
+}
+bool MAX7219_DotMatrix::closedAreaFill(int16_t center_x, int16_t center_y, uint8_t *matrix_tmp){
+
+    int16_t stack_idx = 0;
+    int16_t* stack = (int16_t *)calloc(matrix_byte*DM_DOT_COUNT*2, sizeof(int16_t));
+    if (stack == NULL) return false;    // if it could not reserve memory
+
+    // init push
+    stack[stack_idx] = center_x;    // idx::0 or odd -> x point
+    stack_idx++;
+    stack[stack_idx] = center_y;    // idx::even -> y point
+    stack_idx++;
+    while(stack_idx > 0){
+        // recursion
+        stack_idx = closedAreaFillLoop(stack_idx, stack, matrix_tmp);
+    }
+    if(stack) free(stack);
+    return true;
+}
+
+int16_t MAX7219_DotMatrix::closedAreaFillLoop(int16_t idx, int16_t* stack, uint8_t* matrix_tmp){
+
+    idx--;
+    int16_t y = stack[idx];
+    idx--;
+    int16_t x = stack[idx];
+
+    if(!isWithin(x, y)) return idx;
+
+    setBit(x,y);
+    setBit(x,y,matrix_tmp);
+    if( getPoint(x-1, y, matrix_tmp) != draw_mode ){
+        stack[idx] = x-1;
+        idx++;
+        stack[idx] = y;
+        idx++;
+        setBit(x-1, y);
+        setBit(x-1, y, matrix_tmp);
+    }
+    if( getPoint(x, y-1, matrix_tmp) != draw_mode ){
+        stack[idx] = x;
+        idx++;
+        stack[idx] = y-1;
+        idx++;
+        setBit(x, y-1);
+        setBit(x, y-1, matrix_tmp);
+    }
+    if( getPoint(x+1, y, matrix_tmp) != draw_mode ){
+        stack[idx] = x+1;
+        idx++;
+        stack[idx] = y;
+        idx++;
+        setBit(x+1, y);
+        setBit(x+1, y, matrix_tmp);
+    }
+    if( getPoint(x, y+1, matrix_tmp) != draw_mode ){
+        stack[idx] = x;
+        idx++;
+        stack[idx] = y+1;
+        idx++;
+        setBit(x, y+1);
+        setBit(x, y+1, matrix_tmp);
+    }
+    return idx;
 }
 
 // public function
@@ -111,6 +187,9 @@ void MAX7219_DotMatrix::point(int16_t x, int16_t y) {
 }
 
 void MAX7219_DotMatrix::line(int16_t x1, int16_t y1, int16_t x2, int16_t y2) {
+    line(x1, y1, x2, y2, NULL);
+}
+void MAX7219_DotMatrix::line(int16_t x1, int16_t y1, int16_t x2, int16_t y2, uint8_t *matrix_tmp) {
     int16_t min_x = (x1 < x2 )? x1:x2;
     int16_t min_y = (y1 < y2 )? y1:y2;
 
@@ -118,27 +197,38 @@ void MAX7219_DotMatrix::line(int16_t x1, int16_t y1, int16_t x2, int16_t y2) {
 
         if(x2-x1 == 0){
             // Avoid dividing by zero
-            for(int j = min_y; j <= min_y+abs(y2-y1); j++) setBit(i, j);
+            for(int j = min_y; j <= min_y+abs(y2-y1); j++) if(matrix_tmp) setBit(i, j, matrix_tmp); else setBit(i, j);
             break;
         }else{
             double val_y = (y2-y1)/double(x2-x1)*(i-x1) + y1;
-            if(val_y)
-            setBit(i, (uint16_t)val_y );
+            if(matrix_tmp) setBit(i, (uint16_t)val_y, matrix_tmp); else setBit(i, (uint16_t)val_y );
         }
-
     }
 }
 
-void MAX7219_DotMatrix::triangle(int16_t x1, int16_t y1, int16_t x2, int16_t y2, int16_t x3, int16_t y3) {
+bool MAX7219_DotMatrix::triangle(int16_t x1, int16_t y1, int16_t x2, int16_t y2, int16_t x3, int16_t y3) {
 
     line(x1, y1, x2, y2);
     line(x3, y3, x2, y2);
     line(x1, y1, x3, y3);
 
     // If fill status is not set, return
-    if(!fill_status) return;
+    if(!fill_status) return true;
 
-    // Write fill!
+    // reserve memory
+    uint8_t* matrix_tmp = (uint8_t *)calloc(matrix_byte, sizeof(uint8_t));
+    if (matrix_tmp == NULL) return false;    // if it could not reserve memory
+
+    line(x1, y1, x2, y2, matrix_tmp);
+    line(x3, y3, x2, y2, matrix_tmp);
+    line(x1, y1, x3, y3, matrix_tmp);
+
+    double center_x = (x1+x2+x3)/3.0;
+    double center_y = (y1+y2+y3)/3.0;
+
+    bool result = closedAreaFill(center_x, center_y, matrix_tmp);
+    if(matrix_tmp) free(matrix_tmp);
+    return result;
 }
 
 void MAX7219_DotMatrix::rect(int16_t x, int16_t y, uint16_t w, uint16_t h) {
@@ -174,7 +264,18 @@ void MAX7219_DotMatrix::quad(int16_t x1, int16_t y1, int16_t x2, int16_t y2, int
 }
 
 void MAX7219_DotMatrix::ellipse(int16_t x, int16_t y, int16_t w, int16_t h) {
-    ;
+
+    for(double i = 0; i <= 2* DM_PI; i+= 2* DM_PI/180.0 ){
+        double point_x = x + w/2.0*cos(i);
+        double point_y = y + h/2.0*sin(i);
+
+        // if fill status is true, draw line.If not, draw point.
+        if(fill_status){
+            line(x, y, point_x, point_y);
+        }else{
+            setBit(point_x, point_y);
+        }
+    }
 }
 
 void MAX7219_DotMatrix::fill(void) {
@@ -213,38 +314,41 @@ void MAX7219_DotMatrix::toggle(int16_t x, int16_t y){
 }
 
 bool MAX7219_DotMatrix::getPoint(int16_t x, int16_t y){
+    return getPoint(x, y, NULL);
+}
+bool MAX7219_DotMatrix::getPoint(int16_t x, int16_t y, uint8_t *matrix_tmp){
     if(!isWithin(x,y)) return false;
     uint16_t idx = convertCoordinateToMatrixIndex(x, y);
     uint8_t bits = convertCoordinateToMatrixBit(x, y);
-    uint8_t tmp = matrix[idx];
-    return (tmp & bits != 0);
+    uint8_t tmp = (matrix_tmp != NULL)? matrix_tmp[idx] : matrix[idx];
+    return (tmp & bits);
 }
 
 void MAX7219_DotMatrix::draw(void) {
 
     if(rotate_state == DM_DIRECTION_0){
 
-        for(uint8_t i = 1; i<=8; i++){
+        for(uint8_t i = 1; i<=DM_DOT_COUNT; i++){
             digitalWrite(pin_cs, 0);
             for(int16_t count = matrix_byte; count >= 0; count-=8){
 
                 // reverse byte(ex. 11010100 -> 00101011)
                 uint8_t original_bits = matrix[count+i-1];
                 uint8_t reverse_bits;
-                int idx = 8;
+                int idx = DM_DOT_COUNT;
                 while(idx--){
                     reverse_bits <<= 1;
                     reverse_bits |= (original_bits & 1);
                     original_bits >>= 1;
                 }
-                Write_MAX7219(8-i +1, reverse_bits);
+                Write_MAX7219(DM_DOT_COUNT-i +1, reverse_bits);
             }
             digitalWrite(pin_cs, 1);
         }
 
     } else if(rotate_state == DM_DIRECTION_180) {
 
-        for(uint8_t i = 1; i<=8; i++){
+        for(uint8_t i = 1; i<=DM_DOT_COUNT; i++){
             digitalWrite(pin_cs, 0);
             for(int16_t count = 0; count < matrix_byte; count += 8){
                 Write_MAX7219(i, matrix[count+i-1]);
