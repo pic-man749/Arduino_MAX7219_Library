@@ -100,12 +100,10 @@ class MAX7219_DotMatrix {
         void line(int16_t x1, int16_t y1, int16_t x2, int16_t y2, uint8_t *matrix_tmp);
         bool triangle(int16_t x1, int16_t y1, int16_t x2, int16_t y2, int16_t x3, int16_t y3);
         void rect(int16_t x, int16_t y, uint16_t w, uint16_t h);
-        void quad(int16_t x1, int16_t y1, int16_t x2, int16_t y2, int16_t x3, int16_t y3, int16_t x4, int16_t y4);
+        bool quad(int16_t x1, int16_t y1, int16_t x2, int16_t y2, int16_t x3, int16_t y3, int16_t x4, int16_t y4);
         void ellipse(int16_t x, int16_t y, int16_t w, int16_t h);
         void fill(void);
         void noFill(void);
-        void translate(int16_t x, int16_t y);
-        void resetMatrix(void);
         void allOn(void);
         void allOff(void);
         void setDrawMode(bool mode);
@@ -129,7 +127,5 @@ class MAX7219_DotMatrix {
         * SPI.begin()のデバイスによっての個別設定
 
         * triangle と quad のfill
-
-        * 座標操作系関数の廃止を検討
 
 */

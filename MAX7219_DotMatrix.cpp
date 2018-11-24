@@ -250,7 +250,7 @@ void MAX7219_DotMatrix::rect(int16_t x, int16_t y, uint16_t w, uint16_t h) {
     }
 }
 
-void MAX7219_DotMatrix::quad(int16_t x1, int16_t y1, int16_t x2, int16_t y2, int16_t x3, int16_t y3, int16_t x4, int16_t y4) {
+bool MAX7219_DotMatrix::quad(int16_t x1, int16_t y1, int16_t x2, int16_t y2, int16_t x3, int16_t y3, int16_t x4, int16_t y4) {
                             // leftTop, leftBottom, RightBottom, RightTop
     line(x1, y1, x2, y2);
     line(x2, y2, x3, y3);
@@ -260,7 +260,21 @@ void MAX7219_DotMatrix::quad(int16_t x1, int16_t y1, int16_t x2, int16_t y2, int
     // If fill status is not set, return
     if(!fill_status) return;
 
-    // VERY DIFFICULT
+    // reserve memory
+    uint8_t* matrix_tmp = (uint8_t *)calloc(matrix_byte, sizeof(uint8_t));
+    if (matrix_tmp == NULL) return false;    // if it could not reserve memory
+
+    line(x1, y1, x2, y2, matrix_tmp);
+    line(x2, y2, x3, y3, matrix_tmp);
+    line(x3, y3, x4, y4, matrix_tmp);
+    line(x1, y1, x4, y4, matrix_tmp);
+
+    double center_x = (x1+x2+x3+x4)/4.0;
+    double center_y = (y1+y2+y3+y4)/4.0;
+
+    bool result = closedAreaFill(center_x, center_y, matrix_tmp);
+    if(matrix_tmp) free(matrix_tmp);
+    return result;
 }
 
 void MAX7219_DotMatrix::ellipse(int16_t x, int16_t y, int16_t w, int16_t h) {

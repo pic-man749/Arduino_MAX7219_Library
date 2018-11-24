@@ -18,8 +18,6 @@ quad	KEYWORD2
 ellipse	KEYWORD2
 fill	KEYWORD2
 noFill	KEYWORD2
-translate	KEYWORD2
-resetMatrix	KEYWORD2
 allOn	KEYWORD2
 allOff	KEYWORD2
 setDrawMode	KEYWORD2

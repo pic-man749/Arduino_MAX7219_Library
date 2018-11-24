@@ -57,12 +57,18 @@ void loop() {
 //
 //  dm.ellipse(8,7,16,16);
   
-  bool hoge = dm.triangle(16,0,16,7,23,4);
-  dm.fill();
-  hoge = dm.triangle(0,0,0,7,7,4);
+//  bool hoge = dm.triangle(16,0,16,7,23,4);
+//  dm.fill();
+//  hoge = dm.triangle(0,0,0,7,7,4);
 //  
 //  Serial.print("lp end, ");
 //  Serial.println(hoge);
+  dm.setDrawMode(false);
+  dm.fill();
+  dm.quad(0,0, 0,7, 7,7, 7,0);
+  dm.noFill();
+  dm.quad(16,0, 23,7, 16,7, 23,0);
+
   dm.draw();
 
   for(int i=0; i<8; i++){

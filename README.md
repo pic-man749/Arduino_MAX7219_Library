@@ -14,8 +14,6 @@ Hardware example:
 * [MAX7219 Dot Matrix Module 4 in One Display - COLORMIX](https://www.gearbest.com/other-accessories/pp_1257191.html?wid=1433363)
 * [ＭＡＸ７２１９使用赤色ドットマトリクスＬＥＤモジュール](http://akizukidenshi.com/catalog/g/gM-09984/)
 
-**This is a beta version. Several methods are not yet implemented**
-
 ## Sample code
 
 ``` C++:basic.ino
@@ -48,12 +46,3 @@ void loop() {
 ```
 For more information about method, please refer to [Wiki](https://github.com/pic-man749/Arduino_MAX7219_Library/wiki/Welcome-to-the-Arduino_MAX7219_Library-wiki!).
 
-**Only implemented these methods now**
-
-* point()
-* allOn()
-* allOff()
-* setDrawMode()
-* toggle()
-* draw()
-* setBrightness()
