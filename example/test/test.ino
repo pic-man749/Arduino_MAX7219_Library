@@ -63,9 +63,10 @@ void loop() {
 //  
 //  Serial.print("lp end, ");
 //  Serial.println(hoge);
+  dm.allOn();
   dm.setDrawMode(false);
   dm.fill();
-  dm.quad(0,0, 0,7, 7,7, 7,0);
+  dm.quad(0,0, 0,8, 8,8, 8,0);
   dm.noFill();
   dm.quad(16,0, 23,7, 16,7, 23,0);
 
@@ -75,6 +76,17 @@ void loop() {
     for(int j=0; j<32; j++) Serial.print(dm.getPoint(j,i));
     Serial.println();
   }
+
+  int matrix_byte = 16;
+  bool draw_mode = 1;
+  uint8_t* matrix_tmp = (uint8_t *)calloc(matrix_byte, sizeof(uint8_t));
+  if (matrix_tmp == NULL) return false;    // if it could not reserve memory
+  //memset(matrix_tmp, (draw_mode)? 0b11111111 : 0b00000000, matrix_byte);
+  if(draw_mode) memset(matrix_tmp, 0b11111111, matrix_byte);
+  else if(draw_mode) memset(matrix_tmp, 0b00000000, matrix_byte);
+  Serial.print("InLoop:");
+  Serial.print(dm.getPoint(1,1,matrix_tmp));
+  free(matrix_tmp);
 
   while(1) ;
   

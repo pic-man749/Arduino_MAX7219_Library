@@ -14,6 +14,8 @@
 #define DM_DIRECTION_180 2
 #define DM_DIRECTION_270 3
 #define DM_DOT_COUNT 8.0
+#define DM_ON true
+#define DM_OFF false
 #define DM_PI 3.141592653589793
 
 // constants
@@ -126,6 +128,6 @@ class MAX7219_DotMatrix {
         * matrix[]の書き換えするときに範囲外チェックしてない
         * SPI.begin()のデバイスによっての個別設定
 
-        * triangle と quad のfill
+        * draw_mode = falseででない getPoint()の返り値がおかしい
 
 */

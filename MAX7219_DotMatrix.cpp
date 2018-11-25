@@ -135,7 +135,7 @@ bool MAX7219_DotMatrix::closedAreaFill(int16_t center_x, int16_t center_y, uint8
     return true;
 }
 
-int16_t MAX7219_DotMatrix::closedAreaFillLoop(int16_t idx, int16_t* stack, uint8_t* matrix_tmp){
+int16_t MAX7219_DotMatrix::closedAreaFillLoop(int16_t idx, int16_t *stack, uint8_t *matrix_tmp){
 
     idx--;
     int16_t y = stack[idx];
@@ -146,6 +146,16 @@ int16_t MAX7219_DotMatrix::closedAreaFillLoop(int16_t idx, int16_t* stack, uint8
 
     setBit(x,y);
     setBit(x,y,matrix_tmp);
+
+    // Serial.print("x:");
+    // Serial.print(x);
+    // Serial.print(", y:");
+    // Serial.print(y);
+    // Serial.print(", dm:");
+    // Serial.print(draw_mode);
+    // Serial.print(", gP:");
+    // Serial.print(getPoint(x-1, y, matrix_tmp));
+
     if( getPoint(x-1, y, matrix_tmp) != draw_mode ){
         stack[idx] = x-1;
         idx++;
@@ -218,6 +228,7 @@ bool MAX7219_DotMatrix::triangle(int16_t x1, int16_t y1, int16_t x2, int16_t y2,
     // reserve memory
     uint8_t* matrix_tmp = (uint8_t *)calloc(matrix_byte, sizeof(uint8_t));
     if (matrix_tmp == NULL) return false;    // if it could not reserve memory
+    memset(matrix_tmp, (draw_mode)? 0b00000000:0b11111111, matrix_byte);
 
     line(x1, y1, x2, y2, matrix_tmp);
     line(x3, y3, x2, y2, matrix_tmp);
@@ -258,11 +269,12 @@ bool MAX7219_DotMatrix::quad(int16_t x1, int16_t y1, int16_t x2, int16_t y2, int
     line(x1, y1, x4, y4);
 
     // If fill status is not set, return
-    if(!fill_status) return;
+    if(!fill_status) return true;
 
     // reserve memory
     uint8_t* matrix_tmp = (uint8_t *)calloc(matrix_byte, sizeof(uint8_t));
     if (matrix_tmp == NULL) return false;    // if it could not reserve memory
+    memset(matrix_tmp, (draw_mode)? 0b00000000:0b11111111, matrix_byte);
 
     line(x1, y1, x2, y2, matrix_tmp);
     line(x2, y2, x3, y3, matrix_tmp);
@@ -300,14 +312,6 @@ void MAX7219_DotMatrix::noFill(void) {
     fill_status = false;
 }
 
-void MAX7219_DotMatrix::translate(int16_t x, int16_t y) {
-    ;
-}
-
-void MAX7219_DotMatrix::resetMatrix(void) {
-    ;
-}
-
 void MAX7219_DotMatrix::allOn(void){
     memset(matrix, 0b11111111, matrix_byte);
 }
@@ -333,9 +337,9 @@ bool MAX7219_DotMatrix::getPoint(int16_t x, int16_t y){
 bool MAX7219_DotMatrix::getPoint(int16_t x, int16_t y, uint8_t *matrix_tmp){
     if(!isWithin(x,y)) return false;
     uint16_t idx = convertCoordinateToMatrixIndex(x, y);
-    uint8_t bits = convertCoordinateToMatrixBit(x, y);
-    uint8_t tmp = (matrix_tmp != NULL)? matrix_tmp[idx] : matrix[idx];
-    return (tmp & bits);
+    uint16_t bits = convertCoordinateToMatrixBit(x, y);
+    uint16_t tmp = (matrix_tmp != NULL)? matrix_tmp[idx] : matrix[idx];
+    return (uint16_t)(tmp & bits) > 0;
 }
 
 void MAX7219_DotMatrix::draw(void) {
