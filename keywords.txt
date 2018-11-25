@@ -26,7 +26,7 @@ getPoint	KEYWORD2
 draw	KEYWORD2
 setBrightness	KEYWORD2
 setDirection	KEYWORD2
-
+getMemoryUsage	KEYWORD2
 
 
 #######################################

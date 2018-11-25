@@ -35,6 +35,10 @@ void MAX7219_DotMatrix::setRowColumn(uint8_t r, uint8_t c){
 
 // initialize function
 bool MAX7219_DotMatrix::begin(void) {
+
+    // If allready initialized, return
+    if(begun) return true;
+
     pinMode(pin_clk, OUTPUT);
     pinMode(pin_cs, OUTPUT);
     pinMode(pin_din, OUTPUT);
@@ -130,6 +134,8 @@ bool MAX7219_DotMatrix::closedAreaFill(int16_t center_x, int16_t center_y, uint8
     while(stack_idx > 0){
         // recursion
         stack_idx = closedAreaFillLoop(stack_idx, stack, matrix_tmp);
+        Serial.print("idx:");
+        Serial.println(stack_idx);
     }
     if(stack) free(stack);
     return true;
@@ -400,4 +406,8 @@ bool MAX7219_DotMatrix::setDirection(uint8_t E_dd){
     }
 
     return true;
+}
+
+uint32_t MAX7219_DotMatrix::getMemoryUsage(void){
+    return matrix_byte;
 }

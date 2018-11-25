@@ -5,18 +5,18 @@
  *   Arduino      MAX7219
  *     5V  -------- VCC
  *     GND -------- GND
- *     DIN -------- 11
- *     CS  -------- 10
- *     CLK -------- 13
+ *     11  -------- DIN
+ *     10  -------- CS
+ *     13  -------- CLK
  *
  * This example use 1*4 Dot Matrix. The coordinates are...
- *  ┌────────┬───   ...   ───┐
- *  │(0,0)      (7,0)│(8,0)          (31,0)│---
- *  │                │                     │---
- *  │       1        │     2   ...   4     │--- Arduino 
- *  │                │                     │---
- *  │(0,7)      (7,7)│(8,7)          (31,7)│---
- *  └────────┴───   ...     ──┘
+ *         *  ┌────────┬───   ...   ───┐
+ *         ---│(0,0)      (7,0)│(8,0)          (31,0)│
+ *         ---│                │                     │
+ * Arduino ---│       1        │     2   ...   4     │
+ *         ---│                │                     │
+ *         ---│(0,7)      (7,7)│(8,7)          (31,7)│
+ *         *  └────────┴───   ...     ──┘
  *
  * created at 2018-11-18
  */
@@ -66,27 +66,16 @@ void loop() {
   dm.allOn();
   dm.setDrawMode(false);
   dm.fill();
-  dm.quad(0,0, 0,8, 8,8, 8,0);
+  dm.quad(-1,-1, -1,8, 32,8, 32,-1);
   dm.noFill();
   dm.quad(16,0, 23,7, 16,7, 23,0);
 
   dm.draw();
 
-  for(int i=0; i<8; i++){
-    for(int j=0; j<32; j++) Serial.print(dm.getPoint(j,i));
-    Serial.println();
-  }
-
-  int matrix_byte = 16;
-  bool draw_mode = 1;
-  uint8_t* matrix_tmp = (uint8_t *)calloc(matrix_byte, sizeof(uint8_t));
-  if (matrix_tmp == NULL) return false;    // if it could not reserve memory
-  //memset(matrix_tmp, (draw_mode)? 0b11111111 : 0b00000000, matrix_byte);
-  if(draw_mode) memset(matrix_tmp, 0b11111111, matrix_byte);
-  else if(draw_mode) memset(matrix_tmp, 0b00000000, matrix_byte);
-  Serial.print("InLoop:");
-  Serial.print(dm.getPoint(1,1,matrix_tmp));
-  free(matrix_tmp);
+//  for(int i=0; i<8; i++){
+//    for(int j=0; j<32; j++) Serial.print(dm.getPoint(j,i));
+//    Serial.println();
+//  }
 
   while(1) ;
   

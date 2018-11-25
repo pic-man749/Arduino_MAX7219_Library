@@ -115,6 +115,7 @@ class MAX7219_DotMatrix {
         void draw(void);
         bool setBrightness(uint8_t brightness);
         bool setDirection(uint8_t E_dd);
+        uint32_t getMemoryUsage(void);
 };
 
 #endif
@@ -124,10 +125,5 @@ class MAX7219_DotMatrix {
         * 回転モードの実装
         * 文字の実装
             * 背景塗りつぶし設定
-        * 座標変換のサポート（負の値入ってきたとき死ぬ）
-        * matrix[]の書き換えするときに範囲外チェックしてない
         * SPI.begin()のデバイスによっての個別設定
-
-        * draw_mode = falseででない getPoint()の返り値がおかしい
-
 */
