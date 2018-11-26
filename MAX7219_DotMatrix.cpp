@@ -104,6 +104,33 @@ bool MAX7219_DotMatrix::setBit(int16_t x, int16_t y, uint8_t *matrix_tmp){
 
     return true;
 }
+bool MAX7219_DotMatrix::clearBit(int16_t x, int16_t y){
+
+    return clearBit(x, y, NULL);
+}
+bool MAX7219_DotMatrix::clearBit(int16_t x, int16_t y, uint8_t *matrix_tmp){
+
+    if(!isWithin(x,y)) return false;
+    uint16_t index = convertCoordinateToMatrixIndex(x,y);
+    uint8_t bits = convertCoordinateToMatrixBit(x);
+
+    if(draw_mode){
+        if(matrix_tmp){
+            matrix_tmp[index] &= ~bits;
+        }  else {
+            matrix[index] &= ~bits;
+        }
+    } else {
+        if(matrix_tmp){
+            matrix_tmp[index] |= bits;
+        }  else {
+            matrix[index] |= bits;
+        }
+
+    }
+
+    return true;
+}
 uint16_t MAX7219_DotMatrix::convertCoordinateToMatrixIndex(uint16_t x, uint16_t y){
     uint16_t upside    = (uint16_t)floor(y/DM_DOT_COUNT);   // count how many rows are on top
     uint16_t leftside  = (uint16_t)floor(x/DM_DOT_COUNT);   // count how many columns are on the left side

@@ -81,6 +81,8 @@ class MAX7219_DotMatrix {
         void Write_MAX7219Int(uint8_t addr, uint8_t dat);
         bool setBit(int16_t x, int16_t y);
         bool setBit(int16_t x, int16_t y, uint8_t matrix_tmp[]);
+        bool clearBit(int16_t x, int16_t y);
+        bool clearBit(int16_t x, int16_t y, uint8_t matrix_tmp[]);
         uint16_t convertCoordinateToMatrixIndex(uint16_t x, uint16_t y);
         uint8_t  convertCoordinateToMatrixBit(uint16_t x, uint16_t y);
         uint8_t  convertCoordinateToMatrixBit(uint16_t x);
