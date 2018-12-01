@@ -29,7 +29,7 @@
 // main
 class MAX7219_DotMatrix {
 
-    private:
+    protected:
         // private var
         bool begun, fill_status, draw_mode;
         uint8_t pin_clk, pin_cs, pin_din, matrix_row, matrix_column, rotate_state;

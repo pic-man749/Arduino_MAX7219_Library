@@ -5,11 +5,13 @@
 #######################################
 
 MAX7219_DotMatrix	KEYWORD1
+MAX7219_DotMatrix_charSet	KEYWORD1
 
 #######################################
 # Methods and Functions
 #######################################
 
+# main
 point	KEYWORD2
 line	KEYWORD2
 triangle	KEYWORD2
@@ -27,6 +29,9 @@ draw	KEYWORD2
 setBrightness	KEYWORD2
 setDirection	KEYWORD2
 getMemoryUsage	KEYWORD2
+
+# charSet
+setCharDirect	KEYWORD2
 
 
 #######################################

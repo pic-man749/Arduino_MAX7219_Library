@@ -67,7 +67,7 @@ bool MAX7219_DotMatrix::begin(void) {
     return true;
 }
 
-// private function
+// protected function
 void MAX7219_DotMatrix::Write_MAX7219(uint8_t addr, uint8_t dat){
     SPI.transfer(addr);
     SPI.transfer(dat);
