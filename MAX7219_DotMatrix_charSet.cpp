@@ -4,11 +4,22 @@
 MAX7219_DotMatrix_charSet::MAX7219_DotMatrix_charSet(uint8_t pin_clk, uint8_t pin_cs, uint8_t pin_din, uint8_t mr, uint8_t mc) :
     MAX7219_DotMatrix(pin_clk, pin_cs, pin_din, mr, mc)
 {
-
+    cursor_x = 0;
+    cursor_y = 0;
+    margin_left = 1;
+    margin_top = 1;
+    margin_bottom = 1;
+    margin_right = 1;
 }
 MAX7219_DotMatrix_charSet::MAX7219_DotMatrix_charSet(uint8_t mr, uint8_t mc) :
     MAX7219_DotMatrix(mr, mc)
 {
+    cursor_x = 0;
+    cursor_y = 0;
+    margin_left = 1;
+    margin_top = 1;
+    margin_bottom = 1;
+    margin_right = 1;
 
 }
 MAX7219_DotMatrix_charSet::~MAX7219_DotMatrix_charSet(){
@@ -16,11 +27,14 @@ MAX7219_DotMatrix_charSet::~MAX7219_DotMatrix_charSet(){
 }
 
 // private functions
-void MAX7219_DotMatrix_charSet::direct(uint16_t x, int16_t y, uint8_t idx){
+bool MAX7219_DotMatrix_charSet::direct(uint16_t x, int16_t y, uint8_t idx){
+
+    // if idx value over charSet size, return
+    if(idx >= SIZE_OF_CHARSET) return false;
 
     for(int16_t column = 0; column < 5; column++){
 
-        char tmp = pgm_read_byte(charSet_A01 + idx*5 + column);
+        uint8_t tmp = pgm_read_byte(charSet_A01 + idx*5 + column);
         for(uint8_t row = 0; row < 8; row++){
 
             if( (tmp & (0b10000000 >> row)) > 0 ){
@@ -32,12 +46,34 @@ void MAX7219_DotMatrix_charSet::direct(uint16_t x, int16_t y, uint8_t idx){
 }
 
 // public function
-void MAX7219_DotMatrix_charSet::setCharDirect(uint16_t x, int16_t y, uint8_t idx){
-    direct(x, y, idx);
+bool MAX7219_DotMatrix_charSet::printCharDirect(uint16_t x, int16_t y, uint8_t idx){
+    return direct(x, y, idx);
+}
+
+void MAX7219_DotMatrix_charSet::printChar(uint16_t x, int16_t y, uint32_t c){
+
+    // table
+    if('!' <= c && c <= '~'){   // 00100001 ~ 01111111
+        direct(x, y, (char)c-'!');
+    } else if(true){
+
+    } else {    // unkown char
+        direct(x, y, 0b11111111);
+    }
+}
+
+void MAX7219_DotMatrix_charSet::setMargine(uint8_t side, uint8_t value){
+    switch(side){
+        case DM_MARGINE_LEFT   : margin_left   = value; break;
+        case DM_MARGINE_TOP    : margin_top    = value; break;
+        case DM_MARGINE_BOTTOM : margin_bottom = value; break;
+        case DM_MARGINE_RIGHT  : margin_right  = value; break;
+        default: break;
+    }
 }
 
 // char ROM
-const PROGMEM char MAX7219_DotMatrix_charSet::charSet_A01[] = {
+const PROGMEM uint8_t MAX7219_DotMatrix_charSet::charSet_A01[] = {
     //0010 0001~0010 1111
     0b00000000, 0b00000000, 0b11110010, 0b00000000, 0b00000000,  // !
     0b00000000, 0b11100000, 0b00000000, 0b11100000, 0b00000000,  // "
@@ -47,8 +83,8 @@ const PROGMEM char MAX7219_DotMatrix_charSet::charSet_A01[] = {
     0b01101100, 0b10010010, 0b10101010, 0b01000100, 0b00001010,  // &
     0b00000000, 0b10100000, 0b11000000, 0b00000000, 0b00000000,  // '
     0b00000000, 0b00111000, 0b01000100, 0b10000010, 0b00000000,  // (
-    0b00000000, 0b10000010, 0b01000100, 0b10000010, 0b00000000,  // )
-    0b00101000, 0b00001000, 0b01111100, 0b00010000, 0b00101000,  // *
+    0b00000000, 0b10000010, 0b01000100, 0b00111000, 0b00000000,  // )
+    0b00101000, 0b00010000, 0b01111100, 0b00010000, 0b00101000,  // *
     0b00010000, 0b00010000, 0b01111100, 0b00010000, 0b00010000,  // +
     0b00000000, 0b00001010, 0b00001100, 0b00000000, 0b00000000,  // ,
     0b00010000, 0b00010000, 0b00010000, 0b00010000, 0b00010000,  // -
@@ -87,13 +123,13 @@ const PROGMEM char MAX7219_DotMatrix_charSet::charSet_A01[] = {
     0b00000100, 0b00000010, 0b10000010, 0b11111100, 0b10000000,  // J
     0b11111110, 0b00010000, 0b00101000, 0b01000100, 0b10000010,  // K
     0b11111110, 0b00000010, 0b00000010, 0b00000010, 0b00000010,  // L
-    0b11111110, 0b01000000, 0b00110000, 0b11111110, 0b11111110,  // M
+    0b11111110, 0b01000000, 0b00110000, 0b01000000, 0b11111110,  // M
     0b11111110, 0b00100000, 0b00010000, 0b00001000, 0b11111110,  // N
     0b01111100, 0b10000010, 0b10000010, 0b10000010, 0b01111100,  // O
 
     // 0101 0000~0101 1111
-    0b11111110, 0b01001000, 0b01001000, 0b01001000, 0b01100000,  // P
-    0b01111100, 0b10000010, 0b10001010, 0b10000100, 0b01000010,  // Q
+    0b11111110, 0b10010000, 0b10010000, 0b10010000, 0b01100000,  // P
+    0b01111100, 0b10000010, 0b10001010, 0b10000100, 0b01111010,  // Q
     0b11111110, 0b10010000, 0b10011000, 0b10010100, 0b01100010,  // R
     0b01100010, 0b10010010, 0b10010010, 0b10010010, 0b10001100,  // S
     0b10000000, 0b10000000, 0b11111110, 0b10000000, 0b10000000,  // T
@@ -110,7 +146,7 @@ const PROGMEM char MAX7219_DotMatrix_charSet::charSet_A01[] = {
     0b00000010, 0b00000010, 0b00000010, 0b00000010, 0b00000010,  // _
 
     // 0110 0000~0110 1111
-    0b00000000, 0b10000000, 0b01000000, 0b00100000, 0b00000000,  // '
+    0b00000000, 0b10000000, 0b01000000, 0b00100000, 0b00000000,  // `
     0b00000100, 0b00101010, 0b00101010, 0b00101010, 0b00011110,  // a
     0b11111110, 0b00010010, 0b00100010, 0b00100010, 0b00011100,  // b
     0b00011100, 0b00100010, 0b00100010, 0b00100010, 0b00000100,  // c
@@ -123,13 +159,13 @@ const PROGMEM char MAX7219_DotMatrix_charSet::charSet_A01[] = {
     0b00000100, 0b00000010, 0b00100010, 0b10111100, 0b00000000,  // j
     0b11111110, 0b00001000, 0b00010100, 0b00100010, 0b00000000,  // k
     0b00000000, 0b10000010, 0b11111110, 0b00000010, 0b00000000,  // l
-    0b00111110, 0b00011000, 0b00100000, 0b00011110, 0b00000000,  // m
+    0b00111110, 0b00100000, 0b00011000, 0b00100000, 0b00011110,  // m
     0b00111110, 0b00010000, 0b00100000, 0b00100000, 0b00011110,  // n
     0b00011100, 0b00100010, 0b00100010, 0b00100010, 0b00011100,  // o
 
     // 0111 0000~0111 1111
     0b00111110, 0b00101000, 0b00101000, 0b00101000, 0b00010000,  // p
-    0b00111110, 0b00010000, 0b00101000, 0b00101000, 0b00111110,  // q
+    0b00010000, 0b00101000, 0b00101000, 0b00011000, 0b00111110,  // q
     0b00111110, 0b00010000, 0b00100000, 0b00100000, 0b00010000,  // r
     0b00010010, 0b00101010, 0b00101010, 0b00101010, 0b00000100,  // s
     0b00100000, 0b11111100, 0b00100010, 0b00000010, 0b00000100,  // t
@@ -140,7 +176,7 @@ const PROGMEM char MAX7219_DotMatrix_charSet::charSet_A01[] = {
     0b00110000, 0b00001010, 0b00001010, 0b00001010, 0b00111100,  // y
     0b00100010, 0b00100110, 0b00101010, 0b00110010, 0b00100010,  // z
     0b00000000, 0b00010000, 0b01101100, 0b10000010, 0b00000000,  //
-    0b00000000, 0b00000000, 0b11111110, 0b00000000, 0b0000000,  // |
+    0b00000000, 0b00000000, 0b11111110, 0b00000000, 0b00000000,  // |
     0b00000000, 0b10000010, 0b01101100, 0b00010000, 0b00000000,  // }
     0b00010000, 0b00010000, 0b01010100, 0b00111000, 0b00010000,  // ->
     0b00010000, 0b00111000, 0b01010100, 0b00010000, 0b00010000,  // <-
@@ -166,7 +202,7 @@ const PROGMEM char MAX7219_DotMatrix_charSet::charSet_A01[] = {
     0b00010000, 0b00010000, 0b00010000, 0b00010000, 0b00010000,  // -
     0b10000000, 0b10000010, 0b10111100, 0b10010000, 0b11100000,  // ｱ
     0b00001000, 0b00010000, 0b00111110, 0b01000000, 0b10000000,  // ｲ
-    0b01110000, 0b01000000, 0b11000000, 0b01000100, 0b01111000,  // ｳ
+    0b01110000, 0b01000000, 0b11000010, 0b01000100, 0b01111000,  // ｳ
     0b01000010, 0b01000010, 0b01111110, 0b01000010, 0b01000010,  // ｴ
     0b01000100, 0b01001000, 0b01010000, 0b11111110, 0b01000000,  // ｵ
     0b01000010, 0b11111100, 0b01000000, 0b01000010, 0b01111100,  // ｶ
@@ -178,7 +214,7 @@ const PROGMEM char MAX7219_DotMatrix_charSet::charSet_A01[] = {
     0b01010010, 0b01010010, 0b00000010, 0b00000100, 0b00111000,  // ｼ
     0b01000010, 0b01000100, 0b01001000, 0b01010100, 0b01100010,  // ｽ
     0b01000000, 0b11111100, 0b01000010, 0b01010010, 0b01100010,  // ｾ
-    0b01100000, 0b00010010, 0b00000010, 0b00000100, 0b11110000,  // ｿ
+    0b01100000, 0b00010010, 0b00000010, 0b00000100, 0b01110000,  // ｿ
 
     // 1100 0000~1100 1111
     0b00010000, 0b01100010, 0b01010010, 0b01001100, 0b01111000,  // ﾀ
@@ -249,5 +285,8 @@ const PROGMEM char MAX7219_DotMatrix_charSet::charSet_A01[] = {
     0b00100010, 0b00111100, 0b00101000, 0b00101000, 0b00101110,  // 万
     0b00111110, 0b00101000, 0b00111000, 0b00101000, 0b00111110,  // 円
     0b00010000, 0b00010000, 0b01010100, 0b00010000, 0b00010000,  // ÷
+    0b00000000, 0b00000000, 0b00000000, 0b00000000, 0b00000000,  // ' '
     0b11111111, 0b11111111, 0b11111111, 0b11111111, 0b11111111   // ■
 };
+
+const uint8_t MAX7219_DotMatrix_charSet::SIZE_OF_CHARSET = sizeof(charSet_A01) / sizeof(uint8_t) / 5.0;

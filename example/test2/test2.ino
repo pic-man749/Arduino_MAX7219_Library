@@ -33,20 +33,44 @@ MAX7219_DotMatrix_charSet dm = MAX7219_DotMatrix_charSet(MATRIX_ROW, MATRIX_COL)
 void setup() {
 
   // initialize method, you must call.
-  Serial.begin(115200);
+  Serial.begin(9600);
   Serial.println("init start");
   dm.begin();
   Serial.println("init end");
 
+  dm.printCharDirect(0, 0, 0);
+  dm.draw();
+
 }
 
 void loop() {
+  
+  static uint8_t i = 0;
 
-  Serial.println("loop");
+  if (Serial.available() > 0) {
 
-  dm.setCharDirect(0, 0, 0);
-  dm.draw();
+    char c = Serial.read();
+    if(c == '\r'){
+      i++;
+    }else if(c == '\b'){
+      i--;
+    }
+    if(i >= dm.SIZE_OF_CHARSET) i = 0;
+    Serial.print("i = ");
+    Serial.println(i);
+    dm.allOff();
+    dm.printCharDirect(0, 0, i);
+    dm.draw();
+  }
+ 
 
-  while(1) ;
+//  for(int i = 0; i < 255; i++){
+//    uint64_t c = 'ｱ';
+//    Serial.print(char(c+i));
+//    Serial.print(" is ");
+//    Serial.println(c+i, BIN);
+//  }
+
+  //while(1) ;
   
 }
