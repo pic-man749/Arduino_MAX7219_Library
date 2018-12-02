@@ -146,10 +146,6 @@ void MAX7219_DotMatrix_charSet::scroll(void){
             scroll_timer = millis();
             printStr(scroll_point, cursor_y, scroll_string);
             scroll_point -= 1;
-            Serial.print("scroll_point = ");
-            Serial.print(scroll_point);
-            Serial.print("scroll_string_size = ");
-            Serial.println(-(int32_t)scroll_string_size * (5 + margin_right + margin_left) );
             if(scroll_point < -(int32_t)scroll_string_size * (5 + margin_right + margin_left) ){  // 再考
                 scroll_point = matrix_column * DM_DOT_COUNT -1 + margin_right + margin_left;
             }

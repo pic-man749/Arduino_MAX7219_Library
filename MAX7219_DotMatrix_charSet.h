@@ -35,9 +35,9 @@ class MAX7219_DotMatrix_charSet : public MAX7219_DotMatrix{
 
         bool printCharDirect(int16_t x, int16_t y, uint8_t idx);
         bool printCharDirect(uint8_t idx);
+        void setMargine(uint8_t side, int16_t value);
         bool printChar(int16_t x, int16_t y, char c);
         bool printChar(char c);
-        void setMargine(uint8_t side, int16_t value);
         void setCursor(int16_t x, int16_t y);
         void printStr(int16_t x, int16_t y, String str);
         void printStr(String str);
