@@ -15,6 +15,12 @@ class MAX7219_DotMatrix_charSet : public MAX7219_DotMatrix{
         static const PROGMEM uint8_t charSet_A01[];
         int8_t margin_left, margin_top, margin_bottom, margin_right;
         int16_t cursor_x, cursor_y;
+        uint16_t scroll_wait_time;
+        unsigned long scroll_timer;
+        String scroll_string;
+        int32_t scroll_point;
+        uint16_t scroll_string_size;
+        bool char_draw_mode, scroll_status;
 
         // methods
         bool direct(uint8_t idx);
@@ -35,6 +41,11 @@ class MAX7219_DotMatrix_charSet : public MAX7219_DotMatrix{
         void setCursor(int16_t x, int16_t y);
         void printStr(int16_t x, int16_t y, String str);
         void printStr(String str);
+        virtual void scroll(void);
+        void scrollStop(void);
+        void setScrollStr(String str);
+        void setScrollStr(String str, uint16_t tim);
+        void setCharDrawMode(bool mode);
         int16_t getCursorX(void);
         int16_t getCursorY(void);
 };

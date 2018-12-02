@@ -377,6 +377,9 @@ bool MAX7219_DotMatrix::getPoint(int16_t x, int16_t y, uint8_t *matrix_tmp){
 
 void MAX7219_DotMatrix::draw(void) {
 
+    // vitual function for MAX_7219_DotMatrix_charSet
+    scroll();
+
     if(rotate_state == DM_DIRECTION_0){
 
         for(uint8_t i = 1; i<=DM_DOT_COUNT; i++){
@@ -437,4 +440,8 @@ bool MAX7219_DotMatrix::setDirection(uint8_t E_dd){
 
 uint32_t MAX7219_DotMatrix::getMemoryUsage(void){
     return matrix_byte;
+}
+
+void  MAX7219_DotMatrix::scroll(void){
+    ;
 }

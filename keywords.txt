@@ -33,7 +33,15 @@ getMemoryUsage	KEYWORD2
 # charSet
 printCharDirect	KEYWORD2
 setMargine	KEYWORD2
-
+printChar	KEYWORD2
+setCursor	KEYWORD2
+printStr	KEYWORD2
+scroll	KEYWORD2
+scrollStop	KEYWORD2
+setScrollStr	KEYWORD2
+setCharDrawMode	KEYWORD2
+getCursorX	KEYWORD2
+getCursorY	KEYWORD2
 
 #######################################
 # Constants

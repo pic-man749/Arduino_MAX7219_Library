@@ -10,6 +10,12 @@ MAX7219_DotMatrix_charSet::MAX7219_DotMatrix_charSet(uint8_t pin_clk, uint8_t pi
     margin_top = 0;
     margin_bottom = 1;
     margin_right = 1;
+
+    scroll_wait_time = 100;
+    scroll_timer = 0;
+    scroll_point = matrix_column * DM_DOT_COUNT -1;
+    char_draw_mode = true;
+    scroll_status = false;
 }
 MAX7219_DotMatrix_charSet::MAX7219_DotMatrix_charSet(uint8_t mr, uint8_t mc) :
     MAX7219_DotMatrix(mr, mc)
@@ -20,6 +26,12 @@ MAX7219_DotMatrix_charSet::MAX7219_DotMatrix_charSet(uint8_t mr, uint8_t mc) :
     margin_top = 0;
     margin_bottom = 1;
     margin_right = 1;
+
+    scroll_wait_time = 100;
+    scroll_timer = 0;
+    scroll_point = matrix_column * DM_DOT_COUNT -1;
+    char_draw_mode = true;
+    scroll_status = false;
 
 }
 MAX7219_DotMatrix_charSet::~MAX7219_DotMatrix_charSet(){
@@ -42,11 +54,21 @@ bool MAX7219_DotMatrix_charSet::direct(uint8_t idx){
 
             if( (tmp & (0b10000000 >> row)) > 0 ){
                 MAX7219_DotMatrix::setBit(cursor_x+column, cursor_y+row);
+            }else{
+                if(char_draw_mode) MAX7219_DotMatrix::clearBit(cursor_x+column, cursor_y+row);
             }
         }
     }
 
-    cursor_x += 5 + margin_right;
+
+    cursor_x += 5;
+    // clear
+    for(int i = 0; i<margin_right; i++){
+        for(int j = 0; j<8; j++){
+            MAX7219_DotMatrix::clearBit(cursor_x+i, cursor_y+j);
+        }
+    }
+    cursor_x += margin_right;
     cursor_y -= margin_top;
 }
 
@@ -84,12 +106,12 @@ void MAX7219_DotMatrix_charSet::printStr(int16_t x, int16_t y, String str){
 void MAX7219_DotMatrix_charSet::printStr(String str){
 
     uint16_t count = str.length();
-    for(uint16_t i = 0; i < count-1; i++){
+    for(uint16_t i = 0; i < count; i++){
         char c = str.charAt(i);
-        Serial.print("i = ");
-        Serial.print(i);
-        Serial.print(", c[0] = ");
-        Serial.println(c, BIN);
+        // Serial.print("i = ");
+        // Serial.print(i);
+        // Serial.print(", c[0] = ");
+        // Serial.println(c, BIN);
         printChar(c);
     }
 }
@@ -106,6 +128,41 @@ void MAX7219_DotMatrix_charSet::setMargine(uint8_t side, int16_t value){
         case DM_MARGINE_RIGHT  : margin_right  = value; break;
         default: break;
     }
+}
+
+void MAX7219_DotMatrix_charSet::setScrollStr(String str){
+    scroll_string = str;
+    scroll_string_size = str.length();
+    scroll_status = true;
+}
+void MAX7219_DotMatrix_charSet::setScrollStr(String str, uint16_t tim){
+    scroll_wait_time = tim;
+    setScrollStr(str);
+}
+void MAX7219_DotMatrix_charSet::scroll(void){
+
+    if(scroll_status){
+        if(millis() > scroll_timer + scroll_wait_time){
+            scroll_timer = millis();
+            printStr(scroll_point, cursor_y, scroll_string);
+            scroll_point -= 1;
+            Serial.print("scroll_point = ");
+            Serial.print(scroll_point);
+            Serial.print("scroll_string_size = ");
+            Serial.println(-(int32_t)scroll_string_size * (5 + margin_right + margin_left) );
+            if(scroll_point < -(int32_t)scroll_string_size * (5 + margin_right + margin_left) ){  // 再考
+                scroll_point = matrix_column * DM_DOT_COUNT -1 + margin_right + margin_left;
+            }
+        }
+    }
+}
+
+void MAX7219_DotMatrix_charSet::scrollStop(void){
+    scroll_status = false;
+}
+
+void MAX7219_DotMatrix_charSet::setCharDrawMode(bool mode){
+    char_draw_mode = mode;
 }
 
 int16_t MAX7219_DotMatrix_charSet::getCursorX(void){
