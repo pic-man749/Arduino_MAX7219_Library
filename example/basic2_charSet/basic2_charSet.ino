@@ -27,7 +27,7 @@
  */
 
 // if you want to use ASCII characters, include this header
-#include<MAX7219_DotMatrix_charSet.h>
+#include <MAX7219_DotMatrix_charSet.h>
 
 #define MATRIX_ROW 1
 #define MATRIX_COL 4

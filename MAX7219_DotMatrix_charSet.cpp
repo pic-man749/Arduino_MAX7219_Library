@@ -1,4 +1,4 @@
-#include "MAX7219_DotMatrix_charSet.h"
+#include <MAX7219_DotMatrix_charSet.h>
 
 // constructor
 MAX7219_DotMatrix_charSet::MAX7219_DotMatrix_charSet(uint8_t pin_clk, uint8_t pin_cs, uint8_t pin_din, uint8_t mr, uint8_t mc) :
@@ -6,8 +6,8 @@ MAX7219_DotMatrix_charSet::MAX7219_DotMatrix_charSet(uint8_t pin_clk, uint8_t pi
 {
     cursor_x = 0;
     cursor_y = 0;
-    margin_left = 1;
-    margin_top = 1;
+    margin_left = 0;
+    margin_top = 0;
     margin_bottom = 1;
     margin_right = 1;
 }
@@ -16,21 +16,24 @@ MAX7219_DotMatrix_charSet::MAX7219_DotMatrix_charSet(uint8_t mr, uint8_t mc) :
 {
     cursor_x = 0;
     cursor_y = 0;
-    margin_left = 1;
-    margin_top = 1;
+    margin_left = 0;
+    margin_top = 0;
     margin_bottom = 1;
     margin_right = 1;
 
 }
 MAX7219_DotMatrix_charSet::~MAX7219_DotMatrix_charSet(){
-
+    ;
 }
 
 // private functions
-bool MAX7219_DotMatrix_charSet::direct(uint16_t x, int16_t y, uint8_t idx){
+bool MAX7219_DotMatrix_charSet::direct(uint8_t idx){
 
     // if idx value over charSet size, return
     if(idx >= SIZE_OF_CHARSET) return false;
+
+    cursor_x += margin_left;
+    cursor_y += margin_top;
 
     for(int16_t column = 0; column < 5; column++){
 
@@ -38,31 +41,64 @@ bool MAX7219_DotMatrix_charSet::direct(uint16_t x, int16_t y, uint8_t idx){
         for(uint8_t row = 0; row < 8; row++){
 
             if( (tmp & (0b10000000 >> row)) > 0 ){
-                MAX7219_DotMatrix::setBit(x+column, y+row);
+                MAX7219_DotMatrix::setBit(cursor_x+column, cursor_y+row);
             }
         }
-        Serial.println();
     }
+
+    cursor_x += 5 + margin_right;
+    cursor_y -= margin_top;
 }
 
 // public function
-bool MAX7219_DotMatrix_charSet::printCharDirect(uint16_t x, int16_t y, uint8_t idx){
-    return direct(x, y, idx);
+bool MAX7219_DotMatrix_charSet::printCharDirect(int16_t x, int16_t y, uint8_t idx){
+
+    if(idx >= SIZE_OF_CHARSET) return false;
+    setCursor(x, y);
+    return direct(idx);
+}
+bool MAX7219_DotMatrix_charSet::printCharDirect(uint8_t idx){
+    if(idx >= SIZE_OF_CHARSET) return false;
+    return direct(idx);
 }
 
-void MAX7219_DotMatrix_charSet::printChar(uint16_t x, int16_t y, uint32_t c){
+bool MAX7219_DotMatrix_charSet::printChar(int16_t x, int16_t y, char c){
+    setCursor(x, y);
+    return printChar(c);
+}
+bool MAX7219_DotMatrix_charSet::printChar(char c){
 
     // table
-    if('!' <= c && c <= '~'){   // 00100001 ~ 01111111
-        direct(x, y, (char)c-'!');
-    } else if(true){
+    if('!' <= c && c <= '}'){   // 00100001 ~ 01111111
+        direct((char)c-'!');
+    } else if(true){            // 未実装
 
     } else {    // unkown char
-        direct(x, y, 0b11111111);
+        direct(0b11111111);
+    }
+}
+void MAX7219_DotMatrix_charSet::printStr(int16_t x, int16_t y, String str){
+    setCursor(x, y);
+    printStr(str);
+}
+void MAX7219_DotMatrix_charSet::printStr(String str){
+
+    uint16_t count = str.length();
+    for(uint16_t i = 0; i < count-1; i++){
+        char c = str.charAt(i);
+        Serial.print("i = ");
+        Serial.print(i);
+        Serial.print(", c[0] = ");
+        Serial.println(c, BIN);
+        printChar(c);
     }
 }
 
-void MAX7219_DotMatrix_charSet::setMargine(uint8_t side, uint8_t value){
+void MAX7219_DotMatrix_charSet::setCursor(int16_t x, int16_t y){
+    cursor_x = x;
+    cursor_y = y;
+}
+void MAX7219_DotMatrix_charSet::setMargine(uint8_t side, int16_t value){
     switch(side){
         case DM_MARGINE_LEFT   : margin_left   = value; break;
         case DM_MARGINE_TOP    : margin_top    = value; break;
@@ -70,6 +106,13 @@ void MAX7219_DotMatrix_charSet::setMargine(uint8_t side, uint8_t value){
         case DM_MARGINE_RIGHT  : margin_right  = value; break;
         default: break;
     }
+}
+
+int16_t MAX7219_DotMatrix_charSet::getCursorX(void){
+    return cursor_x;
+}
+int16_t MAX7219_DotMatrix_charSet::getCursorY(void){
+    return cursor_y;
 }
 
 // char ROM
