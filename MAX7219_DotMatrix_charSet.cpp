@@ -1,4 +1,5 @@
 #include <MAX7219_DotMatrix_charSet.h>
+#define MDC_DEBUG_FLAG true
 
 // constructor
 MAX7219_DotMatrix_charSet::MAX7219_DotMatrix_charSet(uint8_t pin_clk, uint8_t pin_cs, uint8_t pin_din, uint8_t mr, uint8_t mc) :
@@ -11,11 +12,13 @@ MAX7219_DotMatrix_charSet::MAX7219_DotMatrix_charSet(uint8_t pin_clk, uint8_t pi
     margin_bottom = 1;
     margin_right = 1;
 
+    scroll_string = "";
     scroll_wait_time = 100;
     scroll_timer = 0;
     scroll_point = matrix_column * DM_DOT_COUNT -1;
     char_draw_mode = true;
     scroll_status = false;
+    scroll_round_time = 0;
 }
 MAX7219_DotMatrix_charSet::MAX7219_DotMatrix_charSet(uint8_t mr, uint8_t mc) :
     MAX7219_DotMatrix(mr, mc)
@@ -27,11 +30,13 @@ MAX7219_DotMatrix_charSet::MAX7219_DotMatrix_charSet(uint8_t mr, uint8_t mc) :
     margin_bottom = 1;
     margin_right = 1;
 
+    scroll_string = "";
     scroll_wait_time = 100;
     scroll_timer = 0;
     scroll_point = matrix_column * DM_DOT_COUNT -1;
     char_draw_mode = true;
     scroll_status = false;
+    scroll_round_time = 0;
 
 }
 MAX7219_DotMatrix_charSet::~MAX7219_DotMatrix_charSet(){
@@ -89,13 +94,12 @@ bool MAX7219_DotMatrix_charSet::printChar(int16_t x, int16_t y, char c){
     return printChar(c);
 }
 bool MAX7219_DotMatrix_charSet::printChar(char c){
-
     // table
-    if('!' <= c && c <= '}'){   // 00100001 ~ 01111111
-        direct((char)c-'!');
-    } else if(true){            // 未実装
-
-    } else {    // unkown char
+    if(' ' <= c && c <= '}'){       // 0b00100001 ~ 0b01111111
+        direct(c - (char)' ');
+    } else if(' ' <= c && c <= '}'){
+        direct(0b11111111);
+    } else {                        // unkown char
         direct(0b11111111);
     }
 }
@@ -105,13 +109,8 @@ void MAX7219_DotMatrix_charSet::printStr(int16_t x, int16_t y, String str){
 }
 void MAX7219_DotMatrix_charSet::printStr(String str){
 
-    uint16_t count = str.length();
-    for(uint16_t i = 0; i < count; i++){
+    for(uint16_t i = 0; i < str.length(); i++){
         char c = str.charAt(i);
-        // Serial.print("i = ");
-        // Serial.print(i);
-        // Serial.print(", c[0] = ");
-        // Serial.println(c, BIN);
         printChar(c);
     }
 }
@@ -130,29 +129,87 @@ void MAX7219_DotMatrix_charSet::setMargine(uint8_t side, int16_t value){
     }
 }
 
+void MAX7219_DotMatrix_charSet::updateScrollRoundTime(){
+    scroll_round_time = (scroll_string_size * (5 + margin_right + margin_left) + matrix_column * DM_DOT_COUNT) * scroll_wait_time;
+}
+void MAX7219_DotMatrix_charSet::setScrollStr(String str, uint16_t v, int16_t x, int16_t y){
+    cursor_x = x;
+    cursor_y = y;
+    scroll_wait_time = v;
+    setScrollStr(str);
+}
+void MAX7219_DotMatrix_charSet::setScrollStr(String str, uint16_t v){
+    scroll_wait_time = v;
+    setScrollStr(str);
+}
 void MAX7219_DotMatrix_charSet::setScrollStr(String str){
     scroll_string = str;
     scroll_string_size = str.length();
     scroll_status = true;
-}
-void MAX7219_DotMatrix_charSet::setScrollStr(String str, uint16_t tim){
-    scroll_wait_time = tim;
-    setScrollStr(str);
-}
-void MAX7219_DotMatrix_charSet::scroll(void){
 
-    if(scroll_status){
-        if(millis() > scroll_timer + scroll_wait_time){
-            scroll_timer = millis();
-            printStr(scroll_point, cursor_y, scroll_string);
-            scroll_point -= 1;
-            if(scroll_point < -(int32_t)scroll_string_size * (5 + margin_right + margin_left) ){  // 再考
-                scroll_point = matrix_column * DM_DOT_COUNT -1 + margin_right + margin_left;
-            }
+    // debug code
+    if(MDC_DEBUG_FLAG){
+        for(uint16_t i = 0; i < scroll_string_size; i++){
+            char c = str.charAt(i);
+            Serial.print("i = ");
+            Serial.print(i);
+            Serial.print(", c = ");
+            Serial.print(c);
+            Serial.print(", c(BIN) = ");
+            Serial.println(c, BIN);
         }
     }
+
+    updateScrollRoundTime();
+}
+void MAX7219_DotMatrix_charSet::addScrollStr(String str){
+
+    scroll_string += str;
+    scroll_string_size = scroll_string.length();
+    updateScrollRoundTime();
 }
 
+void MAX7219_DotMatrix_charSet::setScrollSpeed(uint16_t v){
+    scroll_wait_time = v;
+    updateScrollRoundTime();
+}
+
+// old version
+// void MAX7219_DotMatrix_charSet::scroll(void){
+
+//     if(!scroll_status) return;
+
+//     if(millis() > scroll_timer + scroll_wait_time){
+//         scroll_timer = millis();
+//         printStr(scroll_point, cursor_y, scroll_string);
+//         scroll_point -= 1;
+//         if(scroll_point < -(int32_t)scroll_string_size * (5 + margin_right + margin_left) ){  // 再考
+//             scroll_point = matrix_column * DM_DOT_COUNT -1 + margin_right + margin_left;
+//         }
+//     }
+// }
+void MAX7219_DotMatrix_charSet::scroll(void){
+
+    if(!scroll_status) return;
+
+    int32_t new_point = matrix_column * DM_DOT_COUNT -1 -(millis() % scroll_round_time)/scroll_wait_time;
+    if(new_point == scroll_point) return;   // If no changes, return.
+
+    // clear end of string
+    int32_t end_point = new_point + scroll_string_size * (5 + margin_right + margin_left);
+    if(MAX7219_DotMatrix::isWithin(end_point, cursor_y)){
+        MAX7219_DotMatrix::draw_mode = !MAX7219_DotMatrix::draw_mode;
+        for(int i = 0; i < scroll_point - new_point; i++){
+            MAX7219_DotMatrix::line(end_point+i, cursor_y, end_point+i, cursor_y+7);
+        }
+        MAX7219_DotMatrix::draw_mode = !MAX7219_DotMatrix::draw_mode;
+    }
+
+    // write string
+    printStr(new_point, cursor_y, scroll_string);
+    scroll_point = new_point;
+
+}
 void MAX7219_DotMatrix_charSet::scrollStop(void){
     scroll_status = false;
 }
@@ -170,7 +227,8 @@ int16_t MAX7219_DotMatrix_charSet::getCursorY(void){
 
 // char ROM
 const PROGMEM uint8_t MAX7219_DotMatrix_charSet::charSet_A01[] = {
-    //0010 0001~0010 1111
+    //0010 0000~0010 1111
+    0b00000000, 0b00000000, 0b00000000, 0b00000000, 0b00000000,  // ' '
     0b00000000, 0b00000000, 0b11110010, 0b00000000, 0b00000000,  // !
     0b00000000, 0b11100000, 0b00000000, 0b11100000, 0b00000000,  // "
     0b00101000, 0b11111110, 0b00101000, 0b11111110, 0b00101000,  // #
@@ -236,7 +294,7 @@ const PROGMEM uint8_t MAX7219_DotMatrix_charSet::charSet_A01[] = {
     0b11100000, 0b00010000, 0b00001110, 0b00010000, 0b11100000,  // Y
     0b10000110, 0b10001010, 0b10010010, 0b10100010, 0b11000010,  // Z
     0b00000000, 0b11111110, 0b10000010, 0b10000010, 0b00000000,  // [
-    0b10101000, 0b01101000, 0b00111110, 0b01101000, 0b10101000,  // \(not "\", this is yen mark)
+    0b10101000, 0b01101000, 0b00111110, 0b01101000, 0b10101000,  // \(not "\", yen mark)
     0b00000000, 0b10000010, 0b10000010, 0b11111110, 0b00000000,  // ]
     0b00100000, 0b01000000, 0b10000000, 0b01000000, 0b00100000,  // ^
     0b00000010, 0b00000010, 0b00000010, 0b00000010, 0b00000010,  // _
@@ -381,7 +439,7 @@ const PROGMEM uint8_t MAX7219_DotMatrix_charSet::charSet_A01[] = {
     0b00100010, 0b00111100, 0b00101000, 0b00101000, 0b00101110,  // 万
     0b00111110, 0b00101000, 0b00111000, 0b00101000, 0b00111110,  // 円
     0b00010000, 0b00010000, 0b01010100, 0b00010000, 0b00010000,  // ÷
-    0b00000000, 0b00000000, 0b00000000, 0b00000000, 0b00000000,  // ' '
+    // none
     0b11111111, 0b11111111, 0b11111111, 0b11111111, 0b11111111   // ■
 };
 

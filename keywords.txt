@@ -42,6 +42,8 @@ setScrollStr	KEYWORD2
 setCharDrawMode	KEYWORD2
 getCursorX	KEYWORD2
 getCursorY	KEYWORD2
+addScrollStr	KEYWORD2
+setScrollSpeed	KEYWORD2
 
 #######################################
 # Constants

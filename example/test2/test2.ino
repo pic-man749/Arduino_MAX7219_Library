@@ -38,30 +38,49 @@ void setup() {
   dm.begin();
   Serial.println("init end");
 
-  dm.printCharDirect(0, 0, 0);
-  dm.draw();
+//  dm.setDrawMode(false);
+//  dm.allOn();
+  dm.setScrollSpeed(10);
+
+  String tmp = "AORUNA KASU hogrpiiurhgo;awjrhgo;iawhre" + String(analogRead(A0));
+  dm.setScrollStr(tmp);
+
+  String a = "ｱ";
+  char c = a.charAt(0);
+  Serial.print("c = ");
+  Serial.print(c);
+  Serial.print(", c[BIN]");
+  Serial.print(c, BIN);
+  Serial.print(", 'ｱ' == 0b10110001");
+  Serial.print(c == 0b10110001);
+  Serial.print(", c[uint32_t]");
+  Serial.println((uint32_t)c, BIN);
 
 }
+float fps = 0.0;
 
 void loop() {
   
-  static uint8_t i = 0;
-
-  if (Serial.available() > 0) {
-
-    char c = Serial.read();
-    if(c == '\r'){
-      i++;
-    }else if(c == '\b'){
-      i--;
-    }
-    if(i >= dm.SIZE_OF_CHARSET) i = 0;
-    Serial.print("i = ");
-    Serial.println(i);
-    dm.allOff();
-    dm.printCharDirect(0, 0, i);
-    dm.draw();
-  }
+//  static uint8_t i = 0;
+//
+//  if (Serial.available() > 0) {
+//
+//    char c = Serial.read();
+//    if(c == '\r'){
+//      i++;
+//    }else if(c == '\b'){
+//      i--;
+//    }
+//    if(i >= dm.SIZE_OF_CHARSET) i = 0;
+//    Serial.print("i = ");
+//    Serial.println(i);
+//    if(i%5 == 0){
+//      dm.allOff();
+//      dm.setCursor(0, 0);
+//    }
+//    dm.printCharDirect(i);
+//    dm.draw();
+//  }
  
 
 //  for(int i = 0; i < 255; i++){
@@ -71,6 +90,13 @@ void loop() {
 //    Serial.println(c+i, BIN);
 //  }
 
-  //while(1) ;
+
+  dm.draw();
+  fps++;
+  if(millis() > 10000){
+    Serial.print("framerate = ");
+    Serial.print(fps / millis() * 1000.0);
+    while(1) ;
+  }
   
 }
