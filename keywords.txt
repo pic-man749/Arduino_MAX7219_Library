@@ -44,6 +44,7 @@ getCursorX	KEYWORD2
 getCursorY	KEYWORD2
 addScrollStr	KEYWORD2
 setScrollSpeed	KEYWORD2
+setBlink	KEYWORD2
 
 #######################################
 # Constants

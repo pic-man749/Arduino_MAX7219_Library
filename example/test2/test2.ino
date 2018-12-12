@@ -40,10 +40,11 @@ void setup() {
 
 //  dm.setDrawMode(false);
 //  dm.allOn();
-  dm.setScrollSpeed(10);
+  //dm.setScrollSpeed(10);
 
-  String tmp = "AORUNA KASU hogrpiiurhgo;awjrhgo;iawhre" + String(analogRead(A0));
+  String tmp = "AORUNA KASU";
   dm.setScrollStr(tmp);
+  dm.setBlink(true);
 
   String a = "ｱ";
   char c = a.charAt(0);
@@ -92,11 +93,11 @@ void loop() {
 
 
   dm.draw();
-  fps++;
-  if(millis() > 10000){
-    Serial.print("framerate = ");
-    Serial.print(fps / millis() * 1000.0);
-    while(1) ;
-  }
+//  fps++;
+//  if(millis() > 10000){
+//    Serial.print("framerate = ");
+//    Serial.print(fps / millis() * 1000.0);
+//    while(1) ;
+//  }
   
 }

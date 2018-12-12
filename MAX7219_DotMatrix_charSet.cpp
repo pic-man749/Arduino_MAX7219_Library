@@ -3,26 +3,14 @@
 
 // constructor
 MAX7219_DotMatrix_charSet::MAX7219_DotMatrix_charSet(uint8_t pin_clk, uint8_t pin_cs, uint8_t pin_din, uint8_t mr, uint8_t mc) :
-    MAX7219_DotMatrix(pin_clk, pin_cs, pin_din, mr, mc)
-{
-    cursor_x = 0;
-    cursor_y = 0;
-    margin_left = 0;
-    margin_top = 0;
-    margin_bottom = 1;
-    margin_right = 1;
-
-    scroll_string = "";
-    scroll_wait_time = 100;
-    scroll_timer = 0;
-    scroll_point = matrix_column * DM_DOT_COUNT -1;
-    char_draw_mode = true;
-    scroll_status = false;
-    scroll_round_time = 0;
+MAX7219_DotMatrix(pin_clk, pin_cs, pin_din, mr, mc){
+    MAX7219_DotMatrix_charSet::init_charSet();
 }
 MAX7219_DotMatrix_charSet::MAX7219_DotMatrix_charSet(uint8_t mr, uint8_t mc) :
-    MAX7219_DotMatrix(mr, mc)
-{
+MAX7219_DotMatrix(mr, mc){
+    MAX7219_DotMatrix_charSet::init_charSet();
+}
+void MAX7219_DotMatrix_charSet::init_charSet(){
     cursor_x = 0;
     cursor_y = 0;
     margin_left = 0;
@@ -36,8 +24,9 @@ MAX7219_DotMatrix_charSet::MAX7219_DotMatrix_charSet(uint8_t mr, uint8_t mc) :
     scroll_point = matrix_column * DM_DOT_COUNT -1;
     char_draw_mode = true;
     scroll_status = false;
+    blink = false;
+    blink_interval = 500;
     scroll_round_time = 0;
-
 }
 MAX7219_DotMatrix_charSet::~MAX7219_DotMatrix_charSet(){
     ;
@@ -206,9 +195,23 @@ void MAX7219_DotMatrix_charSet::scroll(void){
     }
 
     // write string
+    if(blink){
+        if( (millis() / blink_interval) % 2  == 1){
+            for(int i = new_point; i < matrix_column * DM_DOT_COUNT; i += 5 + margin_left + margin_right){
+                printChar(i, cursor_y, ' ');
+            }
+            return;
+        }
+    }
     printStr(new_point, cursor_y, scroll_string);
     scroll_point = new_point;
 
+}
+void MAX7219_DotMatrix_charSet::setBlink(bool mode){
+    blink = mode;
+}
+void MAX7219_DotMatrix_charSet::setBlinkInterval(uint16_t interval){
+    blink_interval = interval;
 }
 void MAX7219_DotMatrix_charSet::scrollStop(void){
     scroll_status = false;

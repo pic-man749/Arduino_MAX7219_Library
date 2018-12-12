@@ -20,12 +20,13 @@ class MAX7219_DotMatrix_charSet : public MAX7219_DotMatrix{
         String scroll_string;
         int32_t scroll_point;
         uint16_t scroll_string_size;
-        bool char_draw_mode, scroll_status;
-        uint16_t scroll_round_time;
+        bool char_draw_mode, scroll_status, blink;
+        uint16_t scroll_round_time, blink_interval;
 
         // methods
         bool direct(uint8_t idx);
         void updateScrollRoundTime();
+        void init_charSet();
 
     public:
         // constructor
@@ -51,6 +52,8 @@ class MAX7219_DotMatrix_charSet : public MAX7219_DotMatrix{
         void setScrollSpeed(uint16_t v);
         void addScrollStr(String str);
         void setCharDrawMode(bool mode);
+        void setBlink(bool mode);
+        void setBlinkInterval(uint16_t interval);
         int16_t getCursorX(void);
         int16_t getCursorY(void);
 };
