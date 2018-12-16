@@ -18,7 +18,7 @@
  *         ---│(0,7)      (7,7)│(8,7)          (31,7)│
  *         *  └────────┴───   ...     ──┘
  *
- * created at 2018-11-18
+ * created at 2018-12-16
  */
 
 #include<MAX7219_DotMatrix_charSet.h>

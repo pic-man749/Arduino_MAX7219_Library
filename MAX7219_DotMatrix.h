@@ -118,6 +118,8 @@ class MAX7219_DotMatrix {
         bool setBrightness(uint8_t brightness);
         bool setDirection(uint8_t E_dd);
         uint32_t getMemoryUsage(void);
+        int16_t getCursorX(void);
+        int16_t getCursorY(void);
 
         // string scroll for MAX_7219_DotMatrix_charSet
         virtual void scroll(void);

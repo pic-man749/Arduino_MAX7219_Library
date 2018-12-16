@@ -78,7 +78,7 @@ bool MAX7219_DotMatrix_charSet::printCharDirect(uint8_t idx){
     return direct(idx);
 }
 
-bool MAX7219_DotMatrix_charSet::printChar(int16_t x, int16_t y, char c){
+bool MAX7219_DotMatrix_charSet::printChar(char c, int16_t x, int16_t y){
     setCursor(x, y);
     return printChar(c);
 }
@@ -92,7 +92,7 @@ bool MAX7219_DotMatrix_charSet::printChar(char c){
         direct(0b11111111);
     }
 }
-void MAX7219_DotMatrix_charSet::printStr(int16_t x, int16_t y, String str){
+void MAX7219_DotMatrix_charSet::printStr(, String str, int16_t x, int16_t y){
     setCursor(x, y);
     printStr(str);
 }
@@ -170,7 +170,7 @@ void MAX7219_DotMatrix_charSet::setScrollSpeed(uint16_t v){
 
 //     if(millis() > scroll_timer + scroll_wait_time){
 //         scroll_timer = millis();
-//         printStr(scroll_point, cursor_y, scroll_string);
+//         printStr(scroll_string, scroll_point, cursor_y);
 //         scroll_point -= 1;
 //         if(scroll_point < -(int32_t)scroll_string_size * (5 + margin_right + margin_left) ){  // 再考
 //             scroll_point = matrix_column * DM_DOT_COUNT -1 + margin_right + margin_left;
@@ -198,12 +198,12 @@ void MAX7219_DotMatrix_charSet::scroll(void){
     if(blink){
         if( (millis() / blink_interval) % 2  == 1){
             for(int i = new_point; i < matrix_column * DM_DOT_COUNT; i += 5 + margin_left + margin_right){
-                printChar(i, cursor_y, ' ');
+                printChar(' ', i, cursor_y);
             }
             return;
         }
     }
-    printStr(new_point, cursor_y, scroll_string);
+    printStr(scroll_string, new_point, cursor_y);
     scroll_point = new_point;
 
 }
@@ -219,13 +219,6 @@ void MAX7219_DotMatrix_charSet::scrollStop(void){
 
 void MAX7219_DotMatrix_charSet::setCharDrawMode(bool mode){
     char_draw_mode = mode;
-}
-
-int16_t MAX7219_DotMatrix_charSet::getCursorX(void){
-    return cursor_x;
-}
-int16_t MAX7219_DotMatrix_charSet::getCursorY(void){
-    return cursor_y;
 }
 
 // char ROM
@@ -436,7 +429,7 @@ const PROGMEM uint8_t MAX7219_DotMatrix_charSet::charSet_A01[] = {
     0b00111110, 0b10000001, 0b00000001, 0b10000010, 0b00111111,  // ü
     0b11000110, 0b10101010, 0b10010010, 0b10000010, 0b10000010,  // Σ
     0b00100010, 0b00111100, 0b00100000, 0b00111110, 0b00100010,  // π
-    0b10100010, 0b10010100, 0b10001000, 0b10010100, 0b10100010,  // -x
+    0b10100010, 0b10010100, 0b10001000, 0b10010100, 0b10100010,  // ¬x
     0b11110000, 0b00001001, 0b00001001, 0b00001001, 0b11111110,  // y
     0b00101000, 0b00101000, 0b00111110, 0b00101000, 0b01001000,  // 千
     0b00100010, 0b00111100, 0b00101000, 0b00101000, 0b00101110,  // 万
@@ -446,4 +439,5 @@ const PROGMEM uint8_t MAX7219_DotMatrix_charSet::charSet_A01[] = {
     0b11111111, 0b11111111, 0b11111111, 0b11111111, 0b11111111   // ■
 };
 
+// size of charSet_A01[]
 const uint8_t MAX7219_DotMatrix_charSet::SIZE_OF_CHARSET = sizeof(charSet_A01) / sizeof(uint8_t) / 5.0;
