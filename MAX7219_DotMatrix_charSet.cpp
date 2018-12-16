@@ -92,7 +92,7 @@ bool MAX7219_DotMatrix_charSet::printChar(char c){
         direct(0b11111111);
     }
 }
-void MAX7219_DotMatrix_charSet::printStr(, String str, int16_t x, int16_t y){
+void MAX7219_DotMatrix_charSet::printStr(String str, int16_t x, int16_t y){
     setCursor(x, y);
     printStr(str);
 }
@@ -219,6 +219,13 @@ void MAX7219_DotMatrix_charSet::scrollStop(void){
 
 void MAX7219_DotMatrix_charSet::setCharDrawMode(bool mode){
     char_draw_mode = mode;
+}
+
+int16_t MAX7219_DotMatrix_charSet::getCursorX(void){
+    return cursor_x;
+}
+int16_t MAX7219_DotMatrix_charSet::getCursorY(void){
+    return cursor_y;
 }
 
 // char ROM

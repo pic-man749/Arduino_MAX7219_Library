@@ -445,10 +445,3 @@ uint32_t MAX7219_DotMatrix::getMemoryUsage(void){
 void  MAX7219_DotMatrix::scroll(void){
     ;   // this is virtual method
 }
-
-int16_t MAX7219_DotMatrix::getCursorX(void){
-    return cursor_x;
-}
-int16_t MAX7219_DotMatrix::getCursorY(void){
-    return cursor_y;
-}
