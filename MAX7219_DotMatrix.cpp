@@ -419,7 +419,7 @@ bool MAX7219_DotMatrix::setBrightness(uint8_t brightness){
     // only send 0x00-0x0f
     if(brightness > 0x0f) return false;
 
-    Write_MAX7219Int(0x0a, brightness);
+    for(int i=0; i<matrix_row*matrix_column; i++) Write_MAX7219Int(0x0a, brightness);
     return true;
 }
 
