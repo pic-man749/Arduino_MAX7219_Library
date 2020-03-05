@@ -14,7 +14,7 @@ Hardware example:
 * [MAX7219 Dot Matrix Module 4 in One Display - COLORMIX](https://www.gearbest.com/other-accessories/pp_1257191.html?wid=1433363)
 * [ＭＡＸ７２１９使用赤色ドットマトリクスＬＥＤモジュール](http://akizukidenshi.com/catalog/g/gM-09984/)
 
-An explanation in Japanese is [here](http://lziuchfml.dip.jp/blog/2018/11/30/max7219%e3%82%92%e4%bd%bf%e3%81%a3%e3%81%9f8x8%e3%83%89%e3%83%83%e3%83%88%e3%83%9e%e3%83%88%e3%83%aa%e3%83%83%e3%82%af%e3%82%b9%e3%81%aearduino%e3%83%a9%e3%82%a4%e3%83%96%e3%83%a9%e3%83%aa/).
+An explanation in Japanese is [here](https://picman.dev/blog/2018/11/30/max7219%e3%82%92%e4%bd%bf%e3%81%a3%e3%81%9f8x8%e3%83%89%e3%83%83%e3%83%88%e3%83%9e%e3%83%88%e3%83%aa%e3%83%83%e3%82%af%e3%82%b9%e3%81%aearduino%e3%83%a9%e3%82%a4%e3%83%96%e3%83%a9%e3%83%aa/).
 
 ## Sample code
 
