@@ -1,5 +1,5 @@
 #include <MAX7219_DotMatrix_charSet.h>
-#define MDC_DEBUG_FLAG true
+#define MDC_DEBUG_FLAG false
 
 // constructor
 MAX7219_DotMatrix_charSet::MAX7219_DotMatrix_charSet(uint8_t pin_clk, uint8_t pin_cs, uint8_t pin_din, uint8_t mr, uint8_t mc) :
