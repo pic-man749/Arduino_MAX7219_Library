@@ -41,7 +41,7 @@ void loop() {
     }
   }
 
-  // All LEDs turn off
+  // turn off all LEDs
   dm.allOff();
 }
 
